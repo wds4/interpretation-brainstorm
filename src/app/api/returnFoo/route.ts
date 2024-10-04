@@ -13,8 +13,7 @@ const aFoo = [
     },
 ]
 
-export async function GET(request: Request) {
-    console.log(request)
+export function GET() {
   try {
     return aFoo
   } catch (error) {
