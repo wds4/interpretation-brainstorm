@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 const aFoo = [
     {
       "userId": 1,
@@ -15,8 +17,8 @@ const aFoo = [
 
 export function GET() {
   try {
-    return aFoo
+    return NextResponse.json({ aFoo }, { status: 200 });
   } catch (error) {
-    return error
+    return NextResponse.json({ error }, { status: 500 });
   }
 }
