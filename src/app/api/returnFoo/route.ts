@@ -17,7 +17,7 @@ const aFoo = [
 
 export function GET() {
   try {
-    return NextResponse.json({ aFoo }, { status: 200 });
+    return NextResponse.json(aFoo, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
