@@ -2,13 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
  
-type ResponseData = {
-  message: string
-}
- 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse
 ) {
   try {
     const result =
