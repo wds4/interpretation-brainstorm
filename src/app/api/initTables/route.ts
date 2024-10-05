@@ -19,11 +19,10 @@ CREATE TABLE interpretationProtocols(
 
 
 export async function GET(request: Request) {
-  const sqlCommands = 'SELECT VERSION()'
+  // const sqlCommands = 'SELECT VERSION()'
   console.log(request)
   try {
-    const result =
-      await sql` ${sqlCommands} `;
+    const result = await sql` SELECT VERSION() `;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
