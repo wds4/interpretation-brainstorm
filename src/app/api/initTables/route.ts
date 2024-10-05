@@ -14,15 +14,41 @@ CREATE TABLE interpretationProtocols(
   // OPTIONAL: use naddr to point to the jsonSchema in place of the parametersJsonSchema column
   parametersJsonSchemaNaddr TEXT, -- naddr that points to an event in which the json schema is stored (? stringified and placed in content; ? kind)
 ); '
+
+CREATE TABLE IF NOT EXISTS interpretationProtocols (
+  ID SERIAL PRIMARY KEY,
+  universalInterpretationProtocolID TEXT NOT NULL,
+  name TEXT,
+  title TEXT,
+  description TEXT,
+  parametersJsonSchema JSONB,
+  parametersJsonSchemaNaddr TEXT
+);
+
 */
 
+/*
+const sFollowsParameters = {
+  score: 1.0,
+  confidence: 0.05,
+  depth: 5,
+  pubkeys: [],
+  context: notSpam,
+}
 
+DROP TABLE interpretationProtocols;
+
+INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', '{"a": "b"}');
+INSERT INTO interpretationProtocols (universalInterpretationProtocolID) VALUES ("basicFollowsInterpretationProtocol"});
+*/
 
 export async function GET(request: Request) {
-  // const sqlCommands = 'SELECT VERSION()'
+  
   console.log(request)
   try {
-    const result = await sql` SELECT VERSION() `;
+    const result = await sql`
+INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', '{"a": "b"}');
+`;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
