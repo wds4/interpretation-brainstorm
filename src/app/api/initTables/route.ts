@@ -16,13 +16,14 @@ CREATE TABLE interpretationProtocols(
 ); '
 */
 
-const sqlCommands = 'SELECT VERSION()'
+
 
 export async function GET(request: Request) {
-    console.log(request)
+  const sqlCommands = 'SELECT VERSION()'
+  console.log(request)
   try {
     const result =
-      await sql`${sqlCommands}`;
+      await sql` ${sqlCommands} `;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
