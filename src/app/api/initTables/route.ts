@@ -39,15 +39,16 @@ const sFollowsParameters = {
 DROP TABLE interpretationProtocols;
 
 INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', '{"a": "b"}');
+INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', ${foo});
 INSERT INTO interpretationProtocols (universalInterpretationProtocolID) VALUES ("basicFollowsInterpretationProtocol"});
 */
 
 export async function GET(request: Request) {
-  
+  const foo = '{"a": "b"}'
   console.log(request)
   try {
     const result = await sql`
-INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', '{"a": "b"}');
+INSERT INTO interpretationProtocols (universalInterpretationProtocolID, parametersJsonSchema) VALUES ('basicFollowsInterpretationProtocol', ${foo});
 `;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
