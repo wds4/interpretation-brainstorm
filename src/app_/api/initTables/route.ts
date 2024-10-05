@@ -44,7 +44,6 @@ INSERT INTO interpretationProtocols (universalInterpretationProtocolID) VALUES (
 */
 
 export async function GET(request: Request) {
-  const foo = '{"a": "b"}'
   console.log(request)
   const client = await db.connect();
   try {

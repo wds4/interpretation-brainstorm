@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@noble/hashes": "^1.5.0",
+    "@nostr-dev-kit/ndk": "^2.10.1",
     "@vercel/postgres": "^0.10.0",
     "next": "14.2.14",
+    "nostr-hooks": "^2.9.11",
+    "nostr-tools": "^2.7.2",
     "react": "^18",
     "react-dom": "^18"
   },

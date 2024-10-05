@@ -21,11 +21,13 @@ I followed the tutorial [here](https://www.telerik.com/blogs/integrate-serverles
 
 ```
 npm install @nostr-dev-kit/ndk
-npm install @nostr-dev-kit/ndk-cache-dexie
 npm install @noble/hashes
 npm install nostr-tools
-npm install nostr-hooks@2.8.4
+npm install nostr-hooks
 ```
+
+- did not do `npm install @nostr-dev-kit/ndk-cache-dexie`
+- did not do `npm install nostr-hooks@2.8.4` but instead did latest nostr-hooks
 
 ## Getting Started
 

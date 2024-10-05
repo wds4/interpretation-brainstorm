@@ -1,5 +1,14 @@
+'use client'
+
+import React from 'react'
 import Image from "next/image";
 import { sql } from "@vercel/postgres";
+import { useNostrHooks } from 'nostr-hooks'
+import NDK from '@nostr-dev-kit/ndk'
+
+const customNDK = new NDK({
+  explicitRelayUrls: ["wss://purplepag.es", "wss://relay.damus.io", "wss://nos.lol"],
+});
 
 async function Pets({
   params
@@ -23,6 +32,7 @@ async function Pets({
 }
 
 export default function Home() {
+  useNostrHooks(customNDK)
   const params = { "owner": "Mark" }
   return (
     <div>
