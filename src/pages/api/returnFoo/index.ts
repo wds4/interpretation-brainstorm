@@ -16,10 +16,14 @@ const aFoo = [
     },
 ]
 
-
+/*
 type ResponseData = {
-  message: string
+  message: string,
+  aFoo: object
 }
+*/
+
+type ResponseData = object
  
 export default async function handler(
   req: NextApiRequest,
