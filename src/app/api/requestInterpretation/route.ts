@@ -105,7 +105,7 @@ export async function GET(request: Request) {
   const req = searchParams.get("req");
   const client = await db.connect();
   try {
-    let response:ResponseData = { success: false, message: "unkown error" }
+    let response:ResponseData = { success: false, message: "unknown error" }
     if (typeof req == 'string') {
       response = await processRequest(req)
     }
