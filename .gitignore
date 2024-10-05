@@ -36,5 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 # app versus pages
-# /src/app_
+/src/app_
 /src/pages_
