@@ -45,7 +45,7 @@ const processRequest = async (request: string) => {
   // return universalInterpretationProtocolID
 }
 
-const returnFollowsOnlyTable = async (params) => {
+const returnFollowsOnlyTable = async (params: string) => {
   console.log(params)
   const aRatings = []
   /* build the aRatings table from follows */
@@ -54,7 +54,7 @@ const returnFollowsOnlyTable = async (params) => {
   return aRatings;
 } 
 
-const returnMutesOnlyTable = async (params) => {
+const returnMutesOnlyTable = async (params: string) => {
   console.log(params)
   const aRatings = []
   /* build the aRatings table from mutes */
@@ -63,7 +63,7 @@ const returnMutesOnlyTable = async (params) => {
   return aRatings;
 } 
 
-const returnNotBotsTable = async (params) => {
+const returnNotBotsTable = async (params: string) => {
   console.log(params)
   const aRatings = []
   /* build the aRatings table from follows and mutes */
@@ -95,12 +95,17 @@ const validateRequest = (request: string) => {
   return false
 }
 
+type ResponseData = {
+  success: boolean,
+  message?: string
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const req = searchParams.get("req");
   const client = await db.connect();
   try {
-    let response = 'error response'
+    let response:ResponseData = { success: false, message: "unkown error" }
     if (typeof req == 'string') {
       response = await processRequest(req)
     }
@@ -122,3 +127,5 @@ const errorInterpretationProtocolNotRecognized = () => {
   const response = { success: false, message: "universalInterpretationProtocolID not recognized." }
   return response;
 }
+
+
