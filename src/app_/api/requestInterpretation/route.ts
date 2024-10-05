@@ -6,11 +6,10 @@ export async function GET(request: Request) {
   const req = searchParams.get("req");
   const client = await db.connect();
   try {
-    let oReq = {}
+    let oReq = {"a": "result not found"}
     if (typeof req == 'string') {
       oReq = JSON.parse(req)
     }
-    // const result = await client.sql`SELECT VERSION();`;
     const response = oReq.a || 'result not found'
     // return NextResponse.json({ result }, { status: 200 });
     return NextResponse.json( response, { status: 200 });
