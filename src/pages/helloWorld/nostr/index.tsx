@@ -31,10 +31,6 @@ const SubscribeToEvents_memoization = () => {
         <p>number of events: {events.length}</p>
         <p>Note the use of useMemo to prevent an infinite rerendering loop.</p>
         <p>
-          Look for "rerender SubscribeToEvents_memoization" in javascript console; it should rerender once for
-          each new event received.
-        </p>
-        <p>
           filters: <br />
           {JSON.stringify(filters, null, 4)}
         </p>
