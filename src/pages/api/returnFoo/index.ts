@@ -1,3 +1,4 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from "next/server";
 
 const aFoo = [
@@ -15,10 +16,24 @@ const aFoo = [
     },
 ]
 
-export function GET() {
+/*
+type ResponseData = {
+  message: string,
+  aFoo: object
+}
+*/
+
+type ResponseData = object
+ 
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
   try {
-    return NextResponse.json(aFoo, { status: 200 });
+    const result = aFoo
+    res.status(200).json({ result })
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
+  res.status(200).json({ message: 'Hello from Next.js!' })
 }
