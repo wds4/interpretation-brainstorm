@@ -37,4 +37,4 @@ next-env.d.ts
 
 # app versus pages
 # /src/app_
-# /src/pages_
+/src/pages_
