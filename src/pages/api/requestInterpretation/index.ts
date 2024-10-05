@@ -116,6 +116,8 @@ const returnNotBotsTable = async (params: string) => {
     aRatings.push(r1)
     const r2 = ['Alice', 'Charlie', 'notSpam', 0.0, 0.1]
     aRatings.push(r2)
+    const r3 = ['Bob', 'Charlie', 'notSpam', 0.0, 0.1]
+    aRatings.push(r3)
     return aRatings;
 } 
   
