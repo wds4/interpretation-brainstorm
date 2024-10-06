@@ -20,7 +20,7 @@ function Pets({
         console.log('HEYYYYY !!!!!!!!!')
         const { rows } = await sql`SELECT * from Pets where owner=${params.owner}`;
         console.log('ROWS !!!!!!!!!!!! ' + rows)
-        // setRowse(rows)
+        setRowse([])
       } catch (e) {
         console.log(e)
       }
