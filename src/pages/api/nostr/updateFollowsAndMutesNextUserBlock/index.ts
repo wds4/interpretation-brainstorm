@@ -85,31 +85,36 @@ export default async function handler(
         const pk = res1.rows[x].pubkey
         console.log('process next pk: ' + pk)
         authors.push(pk)
-        const foo = await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pk}`;
-        console.log(foo)
+        await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pk}`;
+        // console.log(foo)
       }  
       await ndk.connect()
       const filter:NDKFilter = { kinds: [3, 10000], authors }
       const sub1 = ndk.subscribe(filter)
+      let numFollowUpdates = 0
+      let numMuteUpdates = 0
       sub1.on('event', async (event) => {
         if (event.kind == 3) {
+          numFollowUpdates++
           // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
           const sFollows:string = returnFollows(event)
-          const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-          console.log('sql result_update_follows:')
-          console.log(result_update_follows)
+          await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+          console.log('sql result_update_follows for pubkey: ' + event.pubkey)
+          // console.log(result_update_follows)
         }
         if (event.kind == 10000) {
+          numMuteUpdates++
           // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
           const sMutes:string = returnMutes(event)
-          const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-          console.log('sql result_update_mutes:')
-          console.log(result_update_mutes)
+          await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+          console.log('sql result_update_mutes for pubkey: ' + event.pubkey)
+          // console.log(result_update_mutes)
         }
       })
       sub1.on('eose', async () => {
-        // res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock: ndk eose received; All done!!!' })
+        res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock: ndk eose received; All done! numFollowUpdates: ' + numFollowUpdates + '; numMuteUpdates: ' + numMuteUpdates})
         console.log('EOSE RECEIVED!!!!!!!!!!!!!!!!!!')
+        client.release();
       })
     }
   } catch (error) {
@@ -117,8 +122,8 @@ export default async function handler(
     res.status(500).json({ message: 'updateFollowsAndMutesNextUserBlock endpoint with error' })
   } finally {
     console.log('releasing the db client now')
-    client.release();
-    res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock endpoint, client released' })
+    // client.release();
+    // res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock endpoint, client released' })
   }
   // res.status(200).json({ message: 'you have reached the updateFollowsAndMutesNextUserBlock endpoint' })
 }
