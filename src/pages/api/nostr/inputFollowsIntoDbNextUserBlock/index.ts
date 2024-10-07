@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 This endpoint selects the follows from a block of pubkeys and makes sure each pk in the follows list is entered 
@@ -27,8 +26,9 @@ export default async function handler(
   let numUsers = 10 // the default number of users to update
   if (searchParams.n) {
     numUsers = Number(searchParams.n)
+    console.log(numUsers)
   }
-  const currentTimestamp = Math.floor(Date.now() / 1000)
+  // const currentTimestamp = Math.floor(Date.now() / 1000)
   const client = await db.connect();
   try {
     // select the block of users
