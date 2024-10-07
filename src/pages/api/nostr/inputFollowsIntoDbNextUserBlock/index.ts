@@ -6,6 +6,7 @@ This endpoint selects the follows from a block of pubkeys and makes sure each pk
 as a row in the local db.
 usage: 
 http://localhost:3000/api/nostr/inputFollowsIntoDbNextUserBlock?n=10
+https://interpretation-brainstorm.vercel.app/api/nostr/inputFollowsIntoDbNextUserBlock?n=10
 
 n indicates the max size of the block
 To generate the block, select where numFollows is greater than zero, haveFollowsBeenInput is false and order by whenLastInputFollowsAttempt
@@ -37,9 +38,11 @@ export default async function handler(
     // TODO: cycle through block
   } catch (error) {
     console.log(error)
+    res.status(500).json({ message: 'inputFollowsIntoDbNextUserBlock endpoint with error' })
   } finally {
     console.log('releasing the db client now')
     client.release();
+    res.status(200).json({ message: 'inputFollowsIntoDbNextUserBlock endpoint, client released' })
   }
-  res.status(200).json({ message: 'you have reached the inputFollowsIntoDbNextUserBlock endpoint' })
+  // res.status(200).json({ message: 'you have reached the inputFollowsIntoDbNextUserBlock endpoint' })
 }

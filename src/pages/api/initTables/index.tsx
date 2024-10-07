@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 /*
 usage:
 http://localhost:3000/api/initTables
+https://interpretation-brainstorm.vercel.app/api/initTables
 */
 
 type ResponseData = {

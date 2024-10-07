@@ -7,6 +7,7 @@ This endpoint selects the follows from the indicated pubkey and makes sure each 
 as a row in the local db.
 usage: 
 http://localhost:3000/api/nostr/inputFollowsIntoDbSingleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://interpretation-brainstorm.vercel.app/api/nostr/inputFollowsIntoDbSingleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
 type ResponseData = {

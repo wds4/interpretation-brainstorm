@@ -7,6 +7,7 @@ import NDK, { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 This endpoint queries nostr for kinds 3 and 10000 events from a block of users
 usage: 
 http://localhost:3000/api/nostr/updateFollowsAndMutesNextUserBlock?n=10
+https://interpretation-brainstorm.vercel.app/api/nostr/updateFollowsAndMutesNextUserBlock?n=10
 
 n indicates the max size of the block
 To generate the block, select users, order by whenLastQueriedFollowsAndMutes
@@ -107,14 +108,17 @@ export default async function handler(
         }
       })
       sub1.on('eose', async () => {
-        res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock: ndk eose received; All done!!!' })
+        // res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock: ndk eose received; All done!!!' })
+        console.log('EOSE RECEIVED!!!!!!!!!!!!!!!!!!')
       })
     }
   } catch (error) {
     console.log(error)
+    res.status(500).json({ message: 'updateFollowsAndMutesNextUserBlock endpoint with error' })
   } finally {
     console.log('releasing the db client now')
     client.release();
+    res.status(200).json({ message: 'updateFollowsAndMutesNextUserBlock endpoint, client released' })
   }
-  res.status(200).json({ message: 'you have reached the updateFollowsAndMutesNextUserBlock endpoint' })
+  // res.status(200).json({ message: 'you have reached the updateFollowsAndMutesNextUserBlock endpoint' })
 }
