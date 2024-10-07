@@ -27,8 +27,17 @@ export default async function handler(
   try {
     const res1 = await client.sql`SELECT * FROM users`;
     console.log(res1)
+    const aPubkeys = []
+    if (res1.rowCount) {
+      for (let x=0; x< res1.rowCount; x++) {
+        const pk = res1.rows[x].pubkey
+        aPubkeys.push(pk)
+      }
+    }
+    res1.rows[0].follows
     response.data = {
-      totalNumberOfPubkeys: res1.rowCount
+      totalNumberOfPubkeys: res1.rowCount,
+      aPubkeys
     }
     response.message = 'Results of your fetchAllPubkeysInDb query:'
     res.status(200).json(response)
