@@ -32,6 +32,15 @@ export default async function handler(
   // const currentTimestamp = Math.floor(Date.now() / 1000)
   const client = await db.connect();
   try {
+    // make a list of pukeys that don't need to be re-added
+    const res0 = await client.sql`SELECT * FROM users`;
+    const aPubkeys = []
+    if (res0.rowCount) {
+      for (let x=0; x< res0.rowCount; x++) {
+        const pk = res0.rows[x].pubkey
+        aPubkeys.push(pk)
+      }
+    }
     // select the block of users
     const res1 = await client.sql`SELECT * FROM users WHERE (JSONB_ARRAY_LENGTH(follows) != 0) AND (haveFollowsBeenInput = false) ORDER BY whenLastInputFollowsAttempt ASC LIMIT ${numUsers}`;
     console.log('inputFollowsIntoDbNextUserBlock, number of eligible users: ' + res1.rowCount)
@@ -44,8 +53,12 @@ export default async function handler(
         const currentTimestamp = Math.floor(Date.now() / 1000)
         for (let y=0; y< aFollows.length; y++) {
           const pk2 = aFollows[y]
-          await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk2}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
-          console.log('inserted pubkey: ' +pk2)
+          if (!aPubkeys.includes(pk2)) {
+            await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk2}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+            console.log('inserted pubkey: ' +pk2)       
+          } else {
+            // console.log('ipubkey: ' +pk2 + ' ALREADY PRESENT, no need to re-insert') 
+          }
         }
         await client.sql`UPDATE users SET havefollowsbeeninput = true, whenlastinputfollowsattempt = ${currentTimestamp} WHERE pubkey = ${pk1}`;
       }

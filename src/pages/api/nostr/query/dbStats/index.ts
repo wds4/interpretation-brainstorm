@@ -24,7 +24,8 @@ export default async function handler(
       withFollows: 0,
       withoutFollows: 0,
       queriedFollowsAndMutes: 0,
-      neverQueriedFollowsAndMutes: 0
+      neverQueriedFollowsAndMutes: 0,
+      haveFollowsBeenInput: 0
     }
   }
   try {
@@ -38,12 +39,15 @@ export default async function handler(
     console.log(res4)
     const res5 = await client.sql`SELECT * FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
     console.log(res5)
+    const res6 = await client.sql`SELECT * FROM users WHERE haveFollowsBeenInput = true`;
+    console.log(res6)
     response.rows = {
       number: res1.rowCount,
       withFollows: res2.rowCount,
       withoutFollows: res3.rowCount,
       queriedFollowsAndMutes: res4.rowCount,
-      neverQueriedFollowsAndMutes:res5.rowCount
+      neverQueriedFollowsAndMutes:res5.rowCount,
+      haveFollowsBeenInput:res6.rowCount
     }
     response.message = 'Results of your dbStats query:'
     res.status(200).json(response)
