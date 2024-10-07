@@ -78,7 +78,7 @@ export default async function handler(
       const client = await db.connect()
       try {
         const res0 = await client.sql`SELECT * FROM users`; // need to turn this into obj[pubkey] = follows
-        let lookupFollowsByPubkey:Obj = {}
+        const lookupFollowsByPubkey:Obj = {}
         if (res0.rowCount) {
           for (let x=0; x< res0.rowCount; x++) {
             const pk = res0.rows[x].pubkey
@@ -94,23 +94,23 @@ export default async function handler(
         const aDos1:string[] = res1.rows[0].follows
         const aTot:string[] = []
 
-        let foo1 = createNextDosFollowList(aTot,aDos1,lookupFollowsByPubkey)
+        const foo1 = createNextDosFollowList(aTot,aDos1,lookupFollowsByPubkey)
         const aDos2:string[] = foo1.aNextHopOut
         console.log('typeof foo1.aTotOut: ' + typeof foo1.aTotOut)
         // console.log('foo1.aTotOut: ' + JSON.stringify(foo1.aTotOut))
         console.log('typeof aDos2: ' + typeof aDos2)
         // console.log('aDos2: ' + JSON.stringify(aDos2))
 
-        let foo2 = createNextDosFollowList(foo1.aTotOut,aDos2,lookupFollowsByPubkey)
+        const foo2 = createNextDosFollowList(foo1.aTotOut,aDos2,lookupFollowsByPubkey)
         const aDos3:string[] = foo2.aNextHopOut
         
-        let foo3 = createNextDosFollowList(foo2.aTotOut,aDos3,lookupFollowsByPubkey)
+        const foo3 = createNextDosFollowList(foo2.aTotOut,aDos3,lookupFollowsByPubkey)
         const aDos4:string[] = foo3.aNextHopOut
 
-        let foo4 = createNextDosFollowList(foo3.aTotOut,aDos4,lookupFollowsByPubkey)
+        const foo4 = createNextDosFollowList(foo3.aTotOut,aDos4,lookupFollowsByPubkey)
         const aDos5:string[] = foo4.aNextHopOut
 
-        let foo5 = createNextDosFollowList(foo4.aTotOut,aDos5,lookupFollowsByPubkey)
+        const foo5 = createNextDosFollowList(foo4.aTotOut,aDos5,lookupFollowsByPubkey)
         const aDos6:string[] = foo5.aNextHopOut
 
         response.message = 'Results of your nostr/query/singleUser/dos query:'

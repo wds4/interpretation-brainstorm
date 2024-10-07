@@ -29,6 +29,34 @@ npm install nostr-hooks
 - did not do `npm install @nostr-dev-kit/ndk-cache-dexie`
 - did not do `npm install nostr-hooks@2.8.4` but instead did latest nostr-hooks
 
+## TODO
+
+Need to add these to vercel.json:
+
+```
+    "crons": [
+        {
+            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=500",
+            "schedule": "0,10,20,30,40,50 * * * *"
+        },
+        {
+            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=20",
+            "schedule": "5,15,25,35,45,55 * * * *"
+        }
+    ],
+    "functions": {
+        "api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
+            "maxDuration": 60
+        },
+        "api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
+            "maxDuration": 60
+        },
+        "api/*.ts": {
+            "maxDuration": 60
+        }
+    }
+```
+
 ## Getting Started
 
 First, run the development server:
