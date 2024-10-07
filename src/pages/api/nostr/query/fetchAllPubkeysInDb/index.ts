@@ -34,7 +34,6 @@ export default async function handler(
         aPubkeys.push(pk)
       }
     }
-    res1.rows[0].follows
     response.data = {
       totalNumberOfPubkeys: res1.rowCount,
       aPubkeys
