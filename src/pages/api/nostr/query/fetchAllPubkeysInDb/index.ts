@@ -26,7 +26,7 @@ export default async function handler(
   }
   try {
     const res1 = await client.sql`SELECT * FROM users`;
-    console.log(res1)
+    // console.log(res1)
     const aPubkeys = []
     if (res1.rowCount) {
       for (let x=0; x< res1.rowCount; x++) {

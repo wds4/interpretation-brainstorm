@@ -5,6 +5,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 /*
 usage: 
 http://localhost:3000/api/nostr/query/singleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+https://interpretation-brainstorm.vercel.app/api/nostr/query/singleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 */
 type ResponseData = {
