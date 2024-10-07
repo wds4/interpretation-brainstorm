@@ -1,6 +1,10 @@
-import { db } from "@vercel/postgres";
+import { db } from "@vercel/postgres"
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+/*
+usage:
+http://localhost:3000/api/initTables
+*/
 
 type ResponseData = {
     message: string
@@ -32,13 +36,16 @@ export default async function handler(
   CREATE TABLE IF NOT EXISTS users (
     ID SERIAL PRIMARY KEY,
     pubkey TEXT UNIQUE NOT NULL,
-    follows JSON,
-    followsCreatedAt INT,
-    followers JSONB,
-    mutes JSONB,
-    mutesCreatedAt INT,
-    mutedBy JSONB,
-    lastUpdated INT
+    follows JSONB DEFAULT '[]',
+    followsCreatedAt INT DEFAULT 0,
+    followers JSONB DEFAULT '[]',
+    mutes JSONB DEFAULT '[]',
+    mutesCreatedAt INT DEFAULT 0,
+    mutedBy JSONB DEFAULT '[]',
+    lastUpdated INT DEFAULT 0,
+    haveFollowsBeenInput boolean DEFAULT false,
+    whenLastQueriedFollowsAndMutes INT DEFAULT 0,
+    whenLastInputFollowsAttempt INT DEFAULT 0
   );
   `;
       // return NextResponse.json({ result }, { status: 200 });

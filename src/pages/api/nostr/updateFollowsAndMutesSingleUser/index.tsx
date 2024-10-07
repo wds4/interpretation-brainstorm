@@ -6,7 +6,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
-http://localhost:3000/api/nostr/userData0Hops?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+http://localhost:3000/api/nostr/updateFollowsAndMutesSingleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 This endpoint searches for follows and mutes from the provided pubkey
 and enters them into the intepretation engine database. 
@@ -71,7 +71,7 @@ export default async function handler(
     // TODO: support npub
   }
   if (!searchParams.pubkey) {
-    res.status(200).json({ message: 'userData0Hops: pubkey not provided' })
+    res.status(200).json({ message: 'updateFollowsAndMutesSingleUser: pubkey not provided' })
   }
   if (searchParams.pubkey) {
     // const pubkey1 = 'e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f'
@@ -83,12 +83,11 @@ export default async function handler(
       if (result_exists.rows[0].exists == true) {
         // do nothing
         console.log('pubkey already exists in database')
-        // res.status(200).json({ message: 'userData0Hops: Yes it exists!'})
       }
       if (result_exists.rows[0].exists == false) {
-        // res.status(200).json({ message: 'userData0Hops: No it does not exist!'})
         console.log('pubkey does not exist in database; adding it now')
-        const result_insert = await client.sql`INSERT INTO users (pubkey) VALUES (${pubkey1}) ON CONFLICT DO NOTHING;`;
+        const currentTimestamp = Math.floor(Date.now() / 1000)
+        const result_insert = await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pubkey1}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
         console.log('sql result:' + result_insert)
       }
       try {
@@ -96,25 +95,33 @@ export default async function handler(
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
         const sub1 = ndk.subscribe(filter)
         sub1.on('event', async (event) => {
-          // console.log('!!event id: ' + event.id)
-          // console.log('!!event author: ' + event.pubkey)
           if (event.kind == 3) {
+            // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
             const sFollows:string = returnFollows(event)
-            // const result = await client.sql`INSERT INTO users (pubkey, follows, followsCreatedAt) VALUES (${event.pubkey}, ${sFollows}, ${event.created_at}) ON CONFLICT DO NOTHING;`;
-            const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows} WHERE pubkey=${event.pubkey}`;
+            const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+            /*
+            // This takes too long and does not always complete, so moved it to its own endpoint
+            const aFollows = JSON.parse(sFollows)
+            for (let x=0; x< aFollows.length; x++) {
+              const pk = aFollows[x]
+              const result_insert = await client.sql`INSERT INTO users (pubkey) VALUES (${pk}) ON CONFLICT DO NOTHING;`;
+              // console.log('inserted pubkey: ' +pk)
+              // console.log(result_insert)
+            }
+            */
             console.log('sql result_update_follows:')
             console.log(result_update_follows)
           }
           if (event.kind == 10000) {
+            // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
             const sMutes:string = returnMutes(event)
-            // const result = await client.sql`INSERT INTO users (pubkey, mutes, mutesCreatedAt) VALUES (${event.pubkey}, ${sMutes}, ${event.created_at}) ON CONFLICT DO NOTHING;`;
-            const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes} WHERE pubkey=${event.pubkey}`;
+            const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
             console.log('sql result_update_mutes:')
             console.log(result_update_mutes)
           }
         })
         sub1.on('eose', async () => {
-          res.status(200).json({ message: 'userData0Hops: ndk eose received; All done!!!' })
+          res.status(200).json({ message: 'updateFollowsAndMutesSingleUser: ndk eose received; All done!!!' })
         })
       } catch (error) {
         console.log(error)
