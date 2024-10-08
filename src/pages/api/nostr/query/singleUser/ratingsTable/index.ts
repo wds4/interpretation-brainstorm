@@ -44,7 +44,6 @@ const returnNextDosPubkeys = (dos:number,lookupPubkeysByDos:Obj1,lookupFollowsBy
       }
     }
   }
-  console.log('for dos = ' + dos + ', aNextDosPubkeys.length: ' + aNextDosPubkeys.length)
   return aNextDosPubkeys
 }
 
@@ -55,13 +54,15 @@ export default async function handler(
   const response: ResponseData = {
     message: '',
     userData: {
+      numUsersInDb: -1,
       dos1: -1,
       dos2: -1,
       dos3: -1,
       dos4: -1,
       dos5: -1,
       dos6: -1,
-      dos999: -1,
+      dosOver6: -1,
+      numRatings: 0,
       ratingsTable: []
     }
   }
@@ -106,20 +107,37 @@ export default async function handler(
 
         // calculate DoS
         for (let d=0; d<5;d++) {
-          lookupPubkeysByDos[d+1] = returnNextDosPubkeys(d,lookupPubkeysByDos,lookupFollowsByPubkey,lookupDoSByPubkey)
+           lookupPubkeysByDos[d+1] = returnNextDosPubkeys(d,lookupPubkeysByDos,lookupFollowsByPubkey,lookupDoSByPubkey)
         }
         if (res0.rowCount) {
           for (let x=0; x< res0.rowCount; x++) {
             const pk = res0.rows[x].pubkey
             const d = lookupDoSByPubkey[pk]
+            if (d < 999) {
+              // add follows ratings
+              const follows = res0.rows[x].follows
+              for (let f=0; f<follows.length; f++) {
+                const pk_child = follows[f]
+                const rating:Rating = [pk, pk_child, 'notSpam', 1.0, 0.05]
+                ratingsTable.push(rating)
+              }
+              // add mutes ratings
+              const mutes = res0.rows[x].mutes
+              for (let m=0; m<mutes.length; m++) {
+                const pk_child = mutes[m]
+                const rating:Rating = [pk, pk_child, 'notSpam', 0.0, 0.1]
+                ratingsTable.push(rating)
+              }
+            }
             if (d == 999) {
               lookupPubkeysByDos[999].push(pk)
             }
           }
         }
 
-        response.message = 'Results of your nostr/query/singleUser/dos query:'
+        response.message = 'Results of your nostr/query/singleUser/ratingsTable query:'
         response.userData = {
+          numUsersInDb: res0.rowCount,
           dos0: lookupPubkeysByDos[0].length,
           dos1: lookupPubkeysByDos[1].length,
           dos2: lookupPubkeysByDos[2].length,
@@ -127,8 +145,8 @@ export default async function handler(
           dos4: lookupPubkeysByDos[4].length,
           dos5: lookupPubkeysByDos[5].length,
           dos6: lookupPubkeysByDos[6].length,
-          dos999: lookupPubkeysByDos[999].length,
-          ratingsTable
+          dosOver6: lookupPubkeysByDos[999].length,
+          numRatings: ratingsTable.length
         }
         res.status(200).json(response)
       } catch (e) {
