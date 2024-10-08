@@ -30,7 +30,7 @@
         "pages/api/nostr/query/singleUser/dos/index.ts": {
             "maxDuration": 120
         },
-        "pages/api/nostr/query/singleUser/ratingsTable/index.ts": {
+        "pages/api/nostr/query/singleUser/ratingsTable/*": {
             "maxDuration": 120
         },
         "pages/api/*.ts": {
