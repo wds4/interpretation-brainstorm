@@ -21,13 +21,13 @@
         }
     ],
     "functions": {
-        "api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
+        "pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
             "maxDuration": 60
         },
-        "api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
+        "pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
             "maxDuration": 60
         },
-        "api/*.ts": {
+        "pages/api/*.ts": {
             "maxDuration": 60
         }
     }
