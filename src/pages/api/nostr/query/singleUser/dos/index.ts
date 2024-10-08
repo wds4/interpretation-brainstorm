@@ -9,6 +9,7 @@ https://interpretation-brainstorm.vercel.app/api/nostr/query/singleUser/dos?pubk
 
 Returns number of pubkeys for each degree of separation
 */
+
 type ResponseData = {
   message: string,
   userData?: object
@@ -65,7 +66,7 @@ export default async function handler(
     // TODO: support npub
   }
   if (!searchParams.pubkey) {
-    res.status(200).json({ message: 'nostr/query/singleUser: pubkey not provided' })
+    res.status(200).json({ message: 'nostr/query/singleUser/dos: pubkey not provided' })
   }
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
@@ -98,6 +99,7 @@ export default async function handler(
           }
         }
 
+        // calculate DoS
         for (let d=0; d<5;d++) {
           lookupPubkeysByDos[d+1] = returnNextDosPubkeys(d,lookupPubkeysByDos,lookupFollowsByPubkey,lookupDoSByPubkey)
         }
@@ -110,8 +112,6 @@ export default async function handler(
             }
           }
         }
-        // const aDos1:string[] = res1.rows[0].follows
-        // const aTot:string[] = []
 
         response.message = 'Results of your nostr/query/singleUser/dos query:'
         response.userData = {
