@@ -36,9 +36,6 @@
         "pages/api/*.ts": {
             "maxDuration": 60
         },
-        "api/nostr/query/singleUser/ratingsTable/*.ts": {
-            "maxDuration": 120
-        },
         "pages/api/nostr/query/singleUser/ratingsTable/*.ts": {
             "maxDuration": 120
         },
