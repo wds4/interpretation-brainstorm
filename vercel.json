@@ -10,16 +10,6 @@
             ]
         }
     ],
-    "crons": [
-        {
-            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=500",
-            "schedule": "0,10,20,30,40,50 * * * *"
-        },
-        {
-            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=50",
-            "schedule": "5,15,25,35,45,55 * * * *"
-        }
-    ],
     "functions": {
         "pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
             "maxDuration": 120
