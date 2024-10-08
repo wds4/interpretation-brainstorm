@@ -14,39 +14,34 @@ type ResponseData = {
   userData?: object
 }
 
-type Obj1 = Array<string>
-type Obj = {
-  [key: string]: Obj1,
- }
+type Obj = Array<string>
+type Obj1 = {
+  [key: string]: Obj,
+}
+ type Obj2 = {
+  [key: string]: number,
+}
 
-
-const createNextDosFollowList = (aTotIn:string[], aPrevHopIn:string[],lookupFollowsByPubkey:Obj) => {
-  // aPrevHopIn is the set of pubkeys n hops away
-  // aNextHopOut will be the set of pubkeys n+1 hops away
-  // aPrevHopIn is a subset of aTotIn
-  const aTotOut:string[] = JSON.parse(JSON.stringify(aTotIn))
-  const aNextHopOut:string[] = []
-  // iterate through aPrevHopIn and add follows to aNextHopOut, minus pubkeys that are in aTotIn
-  for (let x = 0; x < aPrevHopIn.length; x++) {
-    const nextParentPk = aPrevHopIn[x]
-    if (lookupFollowsByPubkey[nextParentPk]) {
-      const nextFollows = lookupFollowsByPubkey[nextParentPk]
-      for (let y = 0; y < nextFollows.length; y++) {
-        const nextChildPk = nextFollows[y]
-        if (!aTotIn.includes(nextChildPk)) {
-          if (!aNextHopOut.includes(nextChildPk)) {
-            aNextHopOut.push(nextChildPk)
-          }
-        }
-        if (!aTotOut.includes(nextChildPk)) {
-          aTotOut.push(nextChildPk)
+const returnNextDosPubkeys = (dos:number,lookupPubkeysByDos:Obj1,lookupFollowsByPubkey:Obj1,lookupDoSByPubkey:Obj2) => {
+  const nextMinimumDos = dos + 1
+  const aLastDosPubkeys = lookupPubkeysByDos[dos]
+  const aNextDosPubkeys:string[] = []
+  for (let p=0; p < aLastDosPubkeys.length; p++) {
+    const pk_parent = aLastDosPubkeys[p]
+    const aFollows = lookupFollowsByPubkey[pk_parent]
+    for (let c=0; c < aFollows.length; c++) {
+      const pk_child = aFollows[c]
+      const currentlyRecordedDos = lookupDoSByPubkey[pk_child]
+      if (nextMinimumDos < currentlyRecordedDos) {
+        lookupDoSByPubkey[pk_child] = nextMinimumDos
+        if (!aNextDosPubkeys.includes(pk_child)) {
+          aNextDosPubkeys.push(pk_child)
         }
       }
     }
   }
-
-  // aTotOut should be the union of aTotIn and aNextHopOut
-  return {aTotOut, aNextHopOut}
+  console.log('for dos = ' + dos + ', aNextDosPubkeys.length: ' + aNextDosPubkeys.length)
+  return aNextDosPubkeys
 }
 
 export default async function handler(
@@ -62,7 +57,7 @@ export default async function handler(
       dos4: -1,
       dos5: -1,
       dos6: -1,
-      over6: -1
+      dos999: -1
     }
   }
   const searchParams = req.query
@@ -78,50 +73,56 @@ export default async function handler(
       const client = await db.connect()
       try {
         const res0 = await client.sql`SELECT * FROM users`; // need to turn this into obj[pubkey] = follows
-        const lookupFollowsByPubkey:Obj = {}
+        const lookupFollowsByPubkey:Obj1 = {}
+        const lookupDoSByPubkey:Obj2 = {}
+        const lookupPubkeysByDos:Obj1 = {}
+        lookupPubkeysByDos[0] = [pubkey1]
+        lookupPubkeysByDos[1] = []
+        lookupPubkeysByDos[2] = []
+        lookupPubkeysByDos[3] = []
+        lookupPubkeysByDos[4] = []
+        lookupPubkeysByDos[5] = []
+        lookupPubkeysByDos[6] = []
+        lookupPubkeysByDos[999] = []
         if (res0.rowCount) {
           for (let x=0; x< res0.rowCount; x++) {
             const pk = res0.rows[x].pubkey
             const follows = res0.rows[x].follows
-            console.log('!!! ============== pk: ' + pk + '; num follows: ' + follows.length)
             if (typeof pk == 'string') {
               lookupFollowsByPubkey[pk] = follows
+              lookupDoSByPubkey[pk] = 999
+              if (pk == pubkey1) {
+                lookupDoSByPubkey[pk] = 0
+              }
             }
           }
         }
-        const res1 = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
-        console.log(res1)
-        const aDos1:string[] = res1.rows[0].follows
-        const aTot:string[] = []
 
-        const foo1 = createNextDosFollowList(aTot,aDos1,lookupFollowsByPubkey)
-        const aDos2:string[] = foo1.aNextHopOut
-        console.log('typeof foo1.aTotOut: ' + typeof foo1.aTotOut)
-        // console.log('foo1.aTotOut: ' + JSON.stringify(foo1.aTotOut))
-        console.log('typeof aDos2: ' + typeof aDos2)
-        // console.log('aDos2: ' + JSON.stringify(aDos2))
-
-        const foo2 = createNextDosFollowList(foo1.aTotOut,aDos2,lookupFollowsByPubkey)
-        const aDos3:string[] = foo2.aNextHopOut
-        
-        const foo3 = createNextDosFollowList(foo2.aTotOut,aDos3,lookupFollowsByPubkey)
-        const aDos4:string[] = foo3.aNextHopOut
-
-        const foo4 = createNextDosFollowList(foo3.aTotOut,aDos4,lookupFollowsByPubkey)
-        const aDos5:string[] = foo4.aNextHopOut
-
-        const foo5 = createNextDosFollowList(foo4.aTotOut,aDos5,lookupFollowsByPubkey)
-        const aDos6:string[] = foo5.aNextHopOut
+        for (let d=0; d<5;d++) {
+          lookupPubkeysByDos[d+1] = returnNextDosPubkeys(d,lookupPubkeysByDos,lookupFollowsByPubkey,lookupDoSByPubkey)
+        }
+        if (res0.rowCount) {
+          for (let x=0; x< res0.rowCount; x++) {
+            const pk = res0.rows[x].pubkey
+            const d = lookupDoSByPubkey[pk]
+            if (d == 999) {
+              lookupPubkeysByDos[999].push(pk)
+            }
+          }
+        }
+        // const aDos1:string[] = res1.rows[0].follows
+        // const aTot:string[] = []
 
         response.message = 'Results of your nostr/query/singleUser/dos query:'
         response.userData = {
-          dos1: aDos1.length,
-          dos2: aDos2.length,
-          dos3: aDos3.length,
-          dos4: aDos4.length,
-          dos5: aDos5.length,
-          dos6: aDos6.length,
-          over6: -1
+          dos0: lookupPubkeysByDos[0].length,
+          dos1: lookupPubkeysByDos[1].length,
+          dos2: lookupPubkeysByDos[2].length,
+          dos3: lookupPubkeysByDos[3].length,
+          dos4: lookupPubkeysByDos[4].length,
+          dos5: lookupPubkeysByDos[5].length,
+          dos6: lookupPubkeysByDos[6].length,
+          dos999: lookupPubkeysByDos[999].length,
         }
         res.status(200).json(response)
       } catch (e) {

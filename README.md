@@ -36,11 +36,11 @@ Need to add these to vercel.json:
 ```
     "crons": [
         {
-            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=500",
+            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=100",
             "schedule": "0,10,20,30,40,50 * * * *"
         },
         {
-            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=20",
+            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=5",
             "schedule": "5,15,25,35,45,55 * * * *"
         }
     ],
