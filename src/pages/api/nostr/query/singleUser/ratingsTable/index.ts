@@ -146,8 +146,7 @@ export default async function handler(
           dos5: lookupPubkeysByDos[5].length,
           dos6: lookupPubkeysByDos[6].length,
           dosOver6: lookupPubkeysByDos[999].length,
-          numRatings: ratingsTable.length,
-          ratingsTable
+          numRatings: ratingsTable.length
         }
         res.status(200).json(response)
       } catch (e) {
