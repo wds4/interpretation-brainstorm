@@ -150,7 +150,8 @@ export default async function handler(
           dosOver6: lookupPubkeysByDos[999].length,
           numRatings: ratingsTable.length,
           ratingsTableChars,
-          megabyteSize
+          megabyteSize,
+          ratingsTable
         }
         res.status(200).json(response)
       } catch (e) {
