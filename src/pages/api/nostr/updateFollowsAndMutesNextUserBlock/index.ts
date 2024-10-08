@@ -7,7 +7,7 @@ import NDK, { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 This endpoint queries nostr for kinds 3 and 10000 events from a block of users
 usage: 
 http://localhost:3000/api/nostr/updateFollowsAndMutesNextUserBlock?n=10
-https://interpretation-brainstorm.vercel.app/api/nostr/updateFollowsAndMutesNextUserBlock?n=10
+https://interpretation-brainstorm.vercel.app/api/nostr/updateFollowsAndMutesNextUserBlock?n=500
 
 n indicates the max size of the block
 To generate the block, select users, order by whenLastQueriedFollowsAndMutes

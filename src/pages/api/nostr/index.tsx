@@ -1,7 +1,7 @@
 import NDK, { NDKEvent } from '@nostr-dev-kit/ndk'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import 'websocket-polyfill'
+// import 'websocket-polyfill'
 
 const explicitRelayUrls = [
   'wss://purplepag.es',

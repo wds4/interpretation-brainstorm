@@ -51,6 +51,8 @@ to place in vercel.json:
 First, run the development server:
 
 ```bash
+vercel dev
+# or
 npm run dev
 # or
 yarn dev

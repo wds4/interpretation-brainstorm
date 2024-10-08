@@ -6,7 +6,7 @@ This endpoint selects the follows from a block of pubkeys and makes sure each pk
 as a row in the local db.
 usage: 
 http://localhost:3000/api/nostr/inputFollowsIntoDbNextUserBlock?n=10
-https://interpretation-brainstorm.vercel.app/api/nostr/inputFollowsIntoDbNextUserBlock?n=10
+https://interpretation-brainstorm.vercel.app/api/nostr/inputFollowsIntoDbNextUserBlock?n=100
 
 n indicates the max size of the block
 To generate the block, select where numFollows is greater than zero, haveFollowsBeenInput is false and order by whenLastInputFollowsAttempt
