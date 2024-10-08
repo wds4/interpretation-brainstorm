@@ -136,6 +136,8 @@ export default async function handler(
         }
 
         response.message = 'Results of your nostr/query/singleUser/ratingsTable query:'
+        const ratingsTableChars = JSON.stringify(ratingsTable).length
+        const megabyteSize = ratingsTableChars / 1048576
         response.userData = {
           numUsersInDb: res0.rowCount,
           dos0: lookupPubkeysByDos[0].length,
@@ -146,7 +148,9 @@ export default async function handler(
           dos5: lookupPubkeysByDos[5].length,
           dos6: lookupPubkeysByDos[6].length,
           dosOver6: lookupPubkeysByDos[999].length,
-          numRatings: ratingsTable.length
+          numRatings: ratingsTable.length,
+          ratingsTableChars,
+          megabyteSize
         }
         res.status(200).json(response)
       } catch (e) {
