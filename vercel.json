@@ -30,7 +30,13 @@
         "pages/api/nostr/query/singleUser/dos/index.ts": {
             "maxDuration": 120
         },
-        "pages/api/nostr/query/singleUser/ratingsTable/*": {
+        "src/pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
+            "maxDuration": 120
+        },
+        "src/pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
+            "maxDuration": 120
+        },
+        "src/pages/api/nostr/query/singleUser/dos/index.ts": {
             "maxDuration": 120
         },
         "pages/api/*.ts": {
