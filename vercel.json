@@ -12,11 +12,11 @@
     ],
     "crons": [
         {
-            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=100",
+            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=500",
             "schedule": "0,10,20,30,40,50 * * * *"
         },
         {
-            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=5",
+            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=20",
             "schedule": "5,15,25,35,45,55 * * * *"
         }
     ]
