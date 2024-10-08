@@ -31,32 +31,6 @@ npm install nostr-hooks
 
 ## TODO
 
-Need to add these to vercel.json:
-
-```
-    "crons": [
-        {
-            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=100",
-            "schedule": "0,10,20,30,40,50 * * * *"
-        },
-        {
-            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=5",
-            "schedule": "5,15,25,35,45,55 * * * *"
-        }
-    ],
-    "functions": {
-        "api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
-            "maxDuration": 60
-        },
-        "api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
-            "maxDuration": 60
-        },
-        "api/*.ts": {
-            "maxDuration": 60
-        }
-    }
-```
-
 ## Getting Started
 
 First, run the development server:
