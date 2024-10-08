@@ -9,5 +9,15 @@
                 { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
             ]
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/nostr/updateFollowsAndMutesNextUserBlock?n=100",
+            "schedule": "0,10,20,30,40,50 * * * *"
+        },
+        {
+            "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=5",
+            "schedule": "5,15,25,35,45,55 * * * *"
+        }
     ]
 }
