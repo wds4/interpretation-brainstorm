@@ -5,8 +5,12 @@ import processRequest from './processRequest';
 /*
 Tests:
 
+http://localhost:3000/api/requestInterpretation
+http://localhost:3000/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":"foo"}
+
 https://interpretation-brainstorm.vercel.app/api/requestInterpretation
 https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":"foo"}
+
 
 */
 

@@ -1,3 +1,7 @@
+import returnBrainRecNotBotsRatingsTable, { RatingsTableObject } from "./returnBrainRecNotBotsRatingsTable";
+import returnFollowsOnlyRatingsTable from "./returnFollowsOnlyRatingsTable";
+import returnMutesOnlyRatingsTable from "./returnMutesOnlyRatingsTable";
+
 const errorInvalidRequest = () => {
     const response = { success: false, message: "The request object does not validate." }
     return response;
@@ -7,39 +11,6 @@ const errorInterpretationProtocolNotRecognized = () => {
     const response = { success: false, message: "universalInterpretationProtocolID not recognized." }
     return response;
 }
-
-const returnFollowsOnlyTable = async (params: string) => {
-    console.log(params)
-    const aRatings = []
-    /* build the aRatings table from follows */
-    const r1 = ['Alice', 'Bob', 'notSpam', 1.0, 0.05]
-    aRatings.push(r1)
-    return aRatings;
-}
-  
-  const returnMutesOnlyTable = async (params: string) => {
-    console.log(params)
-    const aRatings = []
-    /* build the aRatings table from mutes */
-    const r2 = ['Alice', 'Charlie', 'notSpam', 0.0, 0.1]
-    aRatings.push(r2)
-    return aRatings;
-}
-  
-const returnNotBotsTable = async (params: string) => {
-    console.log(params)
-    const aRatings = []
-    /* build the aRatings table from follows and mutes */
-    const r1 = ['Alice', 'Bob', 'notSpam', 1.0, 0.05]
-    aRatings.push(r1)
-    const r2 = ['Alice', 'Charlie', 'notSpam', 0.0, 0.1]
-    aRatings.push(r2)
-    const r3 = ['Bob', 'Charlie', 'notSpam', 0.0, 0.1]
-    aRatings.push(r3)
-    const r4 = ['Charlie', 'Zed', 'notSpam', 1.0, 0.1]
-    aRatings.push(r4)
-    return aRatings;
-} 
   
 const aSupportedProtocols = [
     "basicBrainstormFollowsOnlyInterpretationProtocol",
@@ -79,17 +50,18 @@ const processRequest = async (request: string) => {
       return errorInterpretationProtocolNotRecognized()
     }
   
-    let aRatings = [ ['string', 'string', 'string',  1.0, 0.05] ] // need to define type
+    // let aRatings = [ ['string', 'string', 'string',  1.0, 0.05] ] // need to define type
+    let oRatingsTable: RatingsTableObject = { 'notSpam': {}}
   
     switch(universalInterpretationProtocolID) {
       case "basicBrainstormFollowsOnlyInterpretationProtocol":
-        aRatings = await returnFollowsOnlyTable(parameters)
+        oRatingsTable = await returnFollowsOnlyRatingsTable(parameters)
         break
       case "basicdBrainstormMutesOnlyInterpretationProtocol":
-        aRatings = await returnMutesOnlyTable(parameters)
+        oRatingsTable = await returnMutesOnlyRatingsTable(parameters)
         break
       case "recommendedBrainstormNotBotsInterpretationProtocol": // follows, mutes, and reports (may add zaps, other sources of data later)
-        aRatings = await returnNotBotsTable(parameters)
+        oRatingsTable = await returnBrainRecNotBotsRatingsTable(parameters)
         break
       default:
         return errorInterpretationProtocolNotRecognized() // may be moving this error to before the switch
@@ -97,7 +69,7 @@ const processRequest = async (request: string) => {
   
     const response = {
       success: true,
-      ratingsTable: aRatings
+      ratingsTable: oRatingsTable
     }
     return response
 }

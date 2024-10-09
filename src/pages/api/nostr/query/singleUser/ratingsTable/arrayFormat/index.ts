@@ -27,43 +27,6 @@ type Obj1 = {
   [key: string]: number,
 }
 
-type context = string
-type pubkey = string
-type miniRating = number[]
-
-type R1 = {
-  [key: pubkey]: miniRating
-}
-type R2 = {
-  [key: pubkey]: R1
-}
-type R3 = {
-  [key: context]: R2
-}
-/*
-type R4 = {
-  [key: pubkey]: R3
-}
-interface R5 {
-  [key: pubkey]: R4
-}
-*/
-
-// type RaterMiniRating = string<MiniRating>
-
-/*
-type FooRatingsTable = {
-  string: {
-    string: {
-      string: [number, number]
-    }
-  }
-}
-const foo1:string = 'notSpam'
-const rater1:string = 'Bob'
-const ratee1:string = 'Alice'
-*/
-
 const returnNextDosPubkeys = (dos:number,lookupPubkeysByDos:Obj1,lookupFollowsByPubkey:Obj1,lookupDoSByPubkey:Obj2) => {
   const nextMinimumDos = dos + 1
   const aLastDosPubkeys = lookupPubkeysByDos[dos]
@@ -104,8 +67,6 @@ export default async function handler(
       ratingsTable: []
     }
   }
-  const oRatingsTable:R3 = { 'notSpam': {}}
-
   const searchParams = req.query
   if (searchParams.npub) {
     // TODO: support npub
@@ -119,7 +80,7 @@ export default async function handler(
       const client = await db.connect()
       try {
         const ratingsTable:Ratings = []
-        const res0 = await client.sql`SELECT * FROM users WHERE id < 3`; // need to turn this into obj[pubkey] = follows
+        const res0 = await client.sql`SELECT * FROM users WHERE id < 100`; // need to turn this into obj[pubkey] = follows
         const lookupFollowsByPubkey:Obj1 = {}
         const lookupDoSByPubkey:Obj2 = {}
         const lookupPubkeysByDos:Obj1 = {}
@@ -151,38 +112,22 @@ export default async function handler(
         }
         if (res0.rowCount) {
           for (let x=0; x< res0.rowCount; x++) {
-            const pk:string = res0.rows[x].pubkey
+            const pk = res0.rows[x].pubkey
             const d = lookupDoSByPubkey[pk]
             if (d < 999) {
               // add follows ratings
               const follows = res0.rows[x].follows
               for (let f=0; f<follows.length; f++) {
                 const pk_child = follows[f]
-                // const rating:Rating = [pk, pk_child, 'notSpam', 1.0, 0.05]
-                // ratingsTable.push(rating)
-                if (!oRatingsTable.notSpam[pk]) {
-                  oRatingsTable.notSpam[pk] = {
-                    [pk_child]: [1.0, 0.05]
-                  } 
-                }
-                if (!oRatingsTable.notSpam[pk][pk_child]) {
-                  oRatingsTable.notSpam[pk][pk_child] = [1.0, 0.05]
-                }
+                const rating:Rating = [pk, pk_child, 'notSpam', 1.0, 0.05]
+                ratingsTable.push(rating)
               }
               // add mutes ratings
               const mutes = res0.rows[x].mutes
               for (let m=0; m<mutes.length; m++) {
                 const pk_child = mutes[m]
-                // const rating:Rating = [pk, pk_child, 'notSpam', 0.0, 0.1]
-                // ratingsTable.push(rating)
-                if (!oRatingsTable.notSpam[pk]) {
-                  oRatingsTable.notSpam[pk] = {
-                    [pk_child]: [0.0, 0.1]
-                  } 
-                }
-                if (!oRatingsTable.notSpam[pk][pk_child]) {
-                  oRatingsTable.notSpam[pk][pk_child] = [0.0, 0.1]
-                }
+                const rating:Rating = [pk, pk_child, 'notSpam', 0.0, 0.1]
+                ratingsTable.push(rating)
               }
             }
             if (d == 999) {
@@ -207,7 +152,7 @@ export default async function handler(
           numRatings: ratingsTable.length,
           ratingsTableChars,
           megabyteSize,
-          oRatingsTable
+          ratingsTable
         }
         res.status(200).json(response)
       } catch (e) {
