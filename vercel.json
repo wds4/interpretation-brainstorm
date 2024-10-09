@@ -11,32 +11,38 @@
         }
     ],
     "functions": {
+        "pages/api/requestInterpretation/*.ts": {
+            "maxDuration": 180
+        },
+        "src/pages/api/requestInterpretation/*.ts": {
+            "maxDuration": 180
+        },
         "pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "pages/api/nostr/query/singleUser/dos/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "src/pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "src/pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "src/pages/api/nostr/query/singleUser/dos/index.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "pages/api/*.ts": {
             "maxDuration": 60
         },
         "pages/api/nostr/query/singleUser/ratingsTable/*.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         },
         "src/pages/api/nostr/query/singleUser/ratingsTable/*.ts": {
-            "maxDuration": 120
+            "maxDuration": 180
         }
     }
 }
