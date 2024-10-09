@@ -1,26 +1,22 @@
-type context = string
-type pubkey = string
-type miniRating = number[]
-type R1 = {
-    [key: pubkey]: miniRating
-  }
-type R2 = {
-    [key: pubkey]: R1
-}
-export type RatingsTableObject = {
-    [key: context]: R2
-}
+import { RatingsTableObject } from "@/types"
+import { ResponseData } from "./processRequest"
 
 const oRatingsTable:RatingsTableObject = { 'notSpam': {}}
 
-const returnFollowsOnlyRatingsTable = async (params: string) => {
+const returnFollowsOnlyRatingsTable = async (params: object) => {
     console.log(params)
     oRatingsTable.notSpam = {
         'Alice': {
             'Bob': [1.0, 0.05]
         }
     }
-    return oRatingsTable
+
+    const response:ResponseData = {
+        success: true,
+        ratingsTable: oRatingsTable
+    }
+
+    return response
 }
 
 export default returnFollowsOnlyRatingsTable

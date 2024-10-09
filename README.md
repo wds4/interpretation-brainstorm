@@ -46,6 +46,14 @@ to place in vercel.json:
     ],
 ```
 
+## json-schema
+
+ajv for schema validation
+
+`npm install ajv`
+
+follow this guide: https://ajv.js.org/guide/typescript.html
+
 ## Getting Started
 
 First, run the development server:

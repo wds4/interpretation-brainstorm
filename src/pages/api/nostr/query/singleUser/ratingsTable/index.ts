@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
 import { verifyPubkeyValidity } from '@/helpers/nip19';
+import { RatingsTableObject } from "@/types"
 
 /*
 usage: 
@@ -26,43 +27,6 @@ type Obj1 = {
  type Obj2 = {
   [key: string]: number,
 }
-
-type context = string
-type pubkey = string
-type miniRating = number[]
-
-type R1 = {
-  [key: pubkey]: miniRating
-}
-type R2 = {
-  [key: pubkey]: R1
-}
-type R3 = {
-  [key: context]: R2
-}
-/*
-type R4 = {
-  [key: pubkey]: R3
-}
-interface R5 {
-  [key: pubkey]: R4
-}
-*/
-
-// type RaterMiniRating = string<MiniRating>
-
-/*
-type FooRatingsTable = {
-  string: {
-    string: {
-      string: [number, number]
-    }
-  }
-}
-const foo1:string = 'notSpam'
-const rater1:string = 'Bob'
-const ratee1:string = 'Alice'
-*/
 
 const returnNextDosPubkeys = (dos:number,lookupPubkeysByDos:Obj1,lookupFollowsByPubkey:Obj1,lookupDoSByPubkey:Obj2) => {
   const nextMinimumDos = dos + 1
@@ -104,7 +68,7 @@ export default async function handler(
       ratingsTable: []
     }
   }
-  const oRatingsTable:R3 = { 'notSpam': {}}
+  const oRatingsTable:RatingsTableObject = { 'notSpam': {}}
 
   const searchParams = req.query
   if (searchParams.npub) {
@@ -119,7 +83,8 @@ export default async function handler(
       const client = await db.connect()
       try {
         const ratingsTable:Ratings = []
-        const res0 = await client.sql`SELECT * FROM users WHERE id < 3`; // need to turn this into obj[pubkey] = follows
+        // const res0 = await client.sql`SELECT * FROM users`; // need to turn this into obj[pubkey] = follows
+        const res0 = await client.sql`SELECT * FROM users WHERE id < 3`; // limit id for testing
         const lookupFollowsByPubkey:Obj1 = {}
         const lookupDoSByPubkey:Obj2 = {}
         const lookupPubkeysByDos:Obj1 = {}

@@ -6,11 +6,7 @@ import processRequest from './processRequest';
 Tests:
 
 http://localhost:3000/api/requestInterpretation
-http://localhost:3000/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":"foo"}
-
-https://interpretation-brainstorm.vercel.app/api/requestInterpretation
-https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":"foo"}
-
+http://localhost:3000/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":{"context":"notSpam","pubkeys":["e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f"],"depth":5,"follows":{"score":1.0,"confidence":0.05},"mutes":{"score":0.0,"confidence":0.10}}}
 
 */
 
@@ -24,6 +20,10 @@ export default async function handler(request: NextApiRequest, response: NextApi
     try {
         const searchParams = request.query
         const req = searchParams.req
+        if (!searchParams.req) {
+            const res:ResponseData = { success: false, message: "req parameter was not found" }
+            response.status(500).json(res)
+        }
         if (searchParams.req) {
             let res:ResponseData = { success: false, message: "unknown error" }
             if (typeof req == 'string') {

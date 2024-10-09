@@ -1,6 +1,14 @@
-import returnBrainRecNotBotsRatingsTable, { RatingsTableObject } from "./returnBrainRecNotBotsRatingsTable";
+import { InterpProtocolParams_follows, InterpProtocolParams_followsAndMutes, InterpProtocolParams_mutes, RatingsTableObject } from "@/types";
+import returnBrainRecNotBotsRatingsTable from "./returnBrainRecNotBotsRatingsTable";
 import returnFollowsOnlyRatingsTable from "./returnFollowsOnlyRatingsTable";
 import returnMutesOnlyRatingsTable from "./returnMutesOnlyRatingsTable";
+import Ajv from "ajv"
+import { schema_basicBrainstormFollowsOnlyInterpretationProtocol, schema_basicBrainstormMutesOnlyInterpretationProtocol, schema_recommendedBrainstormNotBotsInterpretationProtocol } from "@/jsonSchemas";
+const ajv = new Ajv()
+
+const validate_basicBrainstormFollowsOnlyInterpretationProtocol = ajv.compile(schema_basicBrainstormFollowsOnlyInterpretationProtocol)
+const validate_basicBrainstormMutesOnlyInterpretationProtocol = ajv.compile(schema_basicBrainstormMutesOnlyInterpretationProtocol)
+const validate_recommendedBrainstormNotBotsInterpretationProtocol = ajv.compile(schema_recommendedBrainstormNotBotsInterpretationProtocol)
 
 const errorInvalidRequest = () => {
     const response = { success: false, message: "The request object does not validate." }
@@ -33,6 +41,15 @@ const validateRequest = (request: string) => {
     return false
 }
 
+export type ResponseData = {
+  success: boolean,
+  message?: string,
+  validationErrors?: object,
+  error?: object
+  dosData?: object,
+  ratingsTable?: RatingsTableObject
+}
+
 const processRequest = async (request: string) => {
     // VALIDATION STEP 1: Validate the request object
     const valid = validateRequest(request) // see below
@@ -43,33 +60,52 @@ const processRequest = async (request: string) => {
     const oRequest = JSON.parse(request)
   
     const universalInterpretationProtocolID = oRequest.universalInterpretationProtocolID
-    const parameters = universalInterpretationProtocolID.parameters
   
-     // VALIDATION STEP 2. make sure universalInterpretationProtocolID is recognized; if not, return an error
-     if (!aSupportedProtocols.includes(universalInterpretationProtocolID)) {
+    // VALIDATION STEP 2. make sure universalInterpretationProtocolID is recognized; if not, return an error
+    if (!aSupportedProtocols.includes(universalInterpretationProtocolID)) {
       return errorInterpretationProtocolNotRecognized()
     }
   
-    // let aRatings = [ ['string', 'string', 'string',  1.0, 0.05] ] // need to define type
-    let oRatingsTable: RatingsTableObject = { 'notSpam': {}}
-  
+    const oRatingsTable: RatingsTableObject = { 'notSpam': {}}
+
+    let response:ResponseData = {
+      success: true,
+      ratingsTable: oRatingsTable
+    }
     switch(universalInterpretationProtocolID) {
       case "basicBrainstormFollowsOnlyInterpretationProtocol":
-        oRatingsTable = await returnFollowsOnlyRatingsTable(parameters)
+        const oInterpretationParameters_follows:InterpProtocolParams_follows = oRequest.parameters
+        if (validate_basicBrainstormFollowsOnlyInterpretationProtocol(oInterpretationParameters_follows)) {
+          response = await returnFollowsOnlyRatingsTable(oInterpretationParameters_follows)
+        } else {
+          response.success = false
+          console.log(validate_basicBrainstormFollowsOnlyInterpretationProtocol.errors)
+        }
         break
-      case "basicdBrainstormMutesOnlyInterpretationProtocol":
-        oRatingsTable = await returnMutesOnlyRatingsTable(parameters)
+      case "basicBrainstormMutesOnlyInterpretationProtocol":
+        const oInterpretationParameters_mutes:InterpProtocolParams_mutes = oRequest.parameters
+        if (validate_basicBrainstormMutesOnlyInterpretationProtocol(oInterpretationParameters_mutes)) {
+          response = await returnMutesOnlyRatingsTable(oInterpretationParameters_mutes)
+        } else {
+          response.success = false
+          console.log(validate_basicBrainstormMutesOnlyInterpretationProtocol.errors)
+        }
         break
       case "recommendedBrainstormNotBotsInterpretationProtocol": // follows, mutes, and reports (may add zaps, other sources of data later)
-        oRatingsTable = await returnBrainRecNotBotsRatingsTable(parameters)
+        const oInterpretationParameters_followsAndMutes:InterpProtocolParams_followsAndMutes = oRequest.parameters
+        if (validate_recommendedBrainstormNotBotsInterpretationProtocol(oInterpretationParameters_followsAndMutes)) {
+          response = await returnBrainRecNotBotsRatingsTable(oInterpretationParameters_followsAndMutes)
+        } else {
+          response.success = false
+          response.message = 'parameters did not validate'
+          if (typeof validate_recommendedBrainstormNotBotsInterpretationProtocol.errors == 'object') {
+            response.validationErrors = JSON.parse(JSON.stringify(validate_recommendedBrainstormNotBotsInterpretationProtocol.errors))
+          }
+          console.log(validate_recommendedBrainstormNotBotsInterpretationProtocol.errors)
+        }
         break
       default:
         return errorInterpretationProtocolNotRecognized() // may be moving this error to before the switch
-    }
-  
-    const response = {
-      success: true,
-      ratingsTable: oRatingsTable
     }
     return response
 }
