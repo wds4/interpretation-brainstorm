@@ -46,7 +46,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
 
     const client = await db.connect()
     try {
-        const res0 = await client.sql`SELECT * FROM users WHERE id < 500`; // need to turn this into obj[pubkey] = follows
+        const res0 = await client.sql`SELECT * FROM users WHERE id < 1000`; // need to turn this into obj[pubkey] = follows
         const lookupFollowsByPubkey:Obj1 = {}
         const lookupDoSByPubkey:Obj2 = {}
         const lookupPubkeysByDos:Obj1 = {}
