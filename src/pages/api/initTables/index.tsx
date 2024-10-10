@@ -18,9 +18,28 @@ export default async function handler(
     const client = await db.connect();
     try {
       const result = await client.sql`
+  DROP TABLE IF EXISTS ratingsTables;
+  DROP TABLE IF EXISTS customers;
   DROP TABLE IF EXISTS interpretationProtocols;
   DROP TABLE IF EXISTS users;
   
+  -- coreTableA
+  CREATE TABLE IF NOT EXISTS ratingsTables(
+    ID SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL DEFAULT 'default',
+    pubkey VARCHAR(255) NOT NULL,
+    ratingsTable JSONB NOT NULL DEFAULT '{}',
+    dosStats JSONB NOT NULL DEFAULT '{}',
+    lastUpdated INT NOT NULL DEFAULT 0,
+    UNIQUE (name, pubkey)
+  );
+
+  -- coreTableB (optional)
+  CREATE TABLE IF NOT EXISTS customers (
+    ID SERIAL PRIMARY KEY,
+    pubkey TEXT NOT NULL
+  );
+
   -- coreTable1
   CREATE TABLE IF NOT EXISTS interpretationProtocols(
     ID SERIAL PRIMARY KEY,
