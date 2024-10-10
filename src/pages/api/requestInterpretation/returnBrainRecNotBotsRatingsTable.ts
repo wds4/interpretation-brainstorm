@@ -56,23 +56,6 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
           const oRatingsTable = resA.rows[0].ratingstable
           const dosStats = resA.rows[0].dosstats
           const dosData = JSON.parse(dosStats)
-          // const ratingsTableChars = JSON.stringify(oRatingsTable).length
-          // const megabyteSize = ratingsTableChars / 1048576
-          /*
-          const dosData = {
-              numUsersInDb: res0.rowCount,
-              dos0: lookupPubkeysByDos[0].length,
-              dos1: lookupPubkeysByDos[1].length,
-              dos2: lookupPubkeysByDos[2].length,
-              dos3: lookupPubkeysByDos[3].length,
-              dos4: lookupPubkeysByDos[4].length,
-              dos5: lookupPubkeysByDos[5].length,
-              dos6: lookupPubkeysByDos[6].length,
-              dosOver6: lookupPubkeysByDos[999].length,
-              ratingsTableChars,
-              megabyteSize,
-          }
-          */
           const response:ResponseData = {
             success: true,
             message,
@@ -82,7 +65,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
           return response
         }
 
-        const res0 = await client.sql`SELECT * FROM users WHERE id < 5000`; // need to turn this into obj[pubkey] = follows
+        const res0 = await client.sql`SELECT * FROM users`; // need to turn this into obj[pubkey] = follows
         const lookupFollowsByPubkey:Obj1 = {}
         const lookupDoSByPubkey:Obj2 = {}
         const lookupPubkeysByDos:Obj1 = {}
