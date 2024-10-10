@@ -23,7 +23,7 @@ export default async function handler(
     const name1 = searchParams.name
     if (typeof name1 == 'string') {
       try {
-        const { rows } = await sql`SELECT * FROM cats WHERE name=${name1};`;
+        const { rows } = await sql`SELECT * FROM interpretation-brainsto-postgres.cats WHERE name=${name1};`;
         if (rows.length > 0) {
           res.status(200).json({ message: 'name ' + name1 + ' already exists in the cat database' })
         } else {
