@@ -4,7 +4,7 @@ import { sql } from "@vercel/postgres";
 /*
 to access:
 http://localhost:3000/api/tests/selectDog?name=spot
-https://interpretation-brainstorm.vercel.app/tests/selectDog?name=spot
+https://interpretation-brainstorm.vercel.app/api/tests/selectDog?name=spot
 */
 
 type ResponseData = {
