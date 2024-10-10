@@ -42,7 +42,7 @@ export default async function handler(
         client.release();
       }
     } else {
-      res.status(200).json({ message: 'the provided name is invalid' })
+      res.status(200).json({ message: 'the provided name is invalid ' })
     }
   }
 }
