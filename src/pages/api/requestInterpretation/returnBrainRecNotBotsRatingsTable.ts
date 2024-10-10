@@ -50,7 +50,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
     const client = await db.connect()
     try {
         // TODO: check whether the existing data is recent enough
-        const resA = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkey1} AND name=${ratingsTableName}`; 
+        const resA = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name=${ratingsTableName}`; 
         if (resA.rowCount == 1) {
           const message = 'Results of your nostr/requestInterpretation query:'
           const oRatingsTable = resA.rows[0].ratingstable
