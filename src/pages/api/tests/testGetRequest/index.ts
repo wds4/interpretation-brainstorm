@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
  
 /*
-http://localhost:3000/api/testGetRequest?request={"a":"b"}
+http://localhost:3000/api/tests/testGetRequest?request={"a":"b"}
 */
 
 export default function handler(request: NextApiRequest, response: NextApiResponse) {
