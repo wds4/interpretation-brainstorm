@@ -4,8 +4,8 @@ import { sql } from "@vercel/postgres";
  
 /*
 to access:
-http://localhost:3000/api/test/selectVersion
-https://interpretation-brainstorm.vercel.app/api/test/selectVersion
+http://localhost:3000/api/tests/selectVersion
+https://interpretation-brainstorm.vercel.app/api/tests/selectVersion
 */
 
 export default async function handler(
