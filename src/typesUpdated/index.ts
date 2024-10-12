@@ -306,6 +306,7 @@ type RatingsMetaData = {
 
 export type ScorecardsWithMetaDataV3 = {
     success: boolean
+    message?: string
     metaData: ScorecardsMetaData
     data: ScorecardsV3
 }
