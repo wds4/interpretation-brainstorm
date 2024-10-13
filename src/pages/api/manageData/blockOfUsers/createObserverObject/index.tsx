@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
+import { ObserverObjectV0Compact } from '@/typesUpdated';
 
 /*
 usage:
@@ -19,6 +20,10 @@ type ResponseData = {
   data?: object
 }
 
+type IdLookup = {
+  [key: string]: string
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -30,31 +35,78 @@ export default async function handler(
   }
   const startTimestamp = Date.now()
   const client = await db.connect();
-  // const currentTimestamp = Math.floor(Date.now() / 1000)
+  const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
       // TODO -- all of it
-
-
-
-
-    const res1 = await client.sql`SELECT * FROM users WHERE ... ORDER BY ... ASC LIMIT ${numUsers};`;
-    if (res1.rowCount) {
-        for (let u=0; u < res1.rowCount; u++) {
-            // const parentPubkey = res1.rows[u].pubkey
-            // TODO - all of it
-
+      const res0 = await client.sql`SELECT id, pubkey FROM users;`;
+      const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput=true ORDER BY whenlastcreatedobserverobject ASC LIMIT ${numUsers};`;
+      const observerObject:ObserverObjectV0Compact = {}
+      const idLookup:IdLookup = {}
+      if (res0.rowCount) {
+        for (let x=0; x < res0.rowCount; x++) {
+          const id = res0.rows[x].id;
+          const pubkey = res0.rows[x].pubkey;
+          idLookup[pubkey] = id;
         }
-        const endTimestamp = Date.now()
-        const duration = endTimestamp - startTimestamp + ' msec'
-        const response:ResponseData = {
-          success: true,
-          message: 'api/manageData/blockOfUsers/createObserverObject results:',
-          data: {
-            duration: duration
+      }
+      if (res1.rowCount) {
+          for (let u=0; u < res1.rowCount; u++) {
+              const parentPubkey = res1.rows[u].pubkey
+              const idParent = res1.rows[u].id
+              // we process mutes first
+              const aMutes = res1.rows[u].mutes;
+              for (let x=0; x < aMutes.length; x++) {
+                  const pk = aMutes[x];
+                  let identifier = pk
+                  if (idLookup[pk]) {
+                      identifier = idLookup[pk]
+                  }
+                  if (identifier != idParent) { // NO SELF RATING
+                      if (!observerObject[idParent]) {
+                          observerObject[idParent] = {
+                              identifier: 'm'
+                          }
+                      } else {
+                          observerObject[idParent][identifier] = 'm'
+                      }
+                  }
+              }
+              // we process follows after mutes
+              // **** NOTE THAT THIS METHOD MEANS THAT A FOLLOW OVERWRITES A MUTE
+              // SO IF ALICE FOLLOWS BOB BUT ALSO MUTES BOB,
+              // THE MUTE GETS IGNORED BC IT IS OVERWRITTEN IN THIS STEP
+              const aFollows = res1.rows[u].follows;
+              for (let x=0; x < aFollows.length; x++) {
+                  const pk = aFollows[x];
+                  let identifier = pk
+                  if (idLookup[pk]) {
+                      identifier = idLookup[pk]
+                  }
+                  if (identifier != idParent) {
+                      if (!observerObject[idParent]) {
+                          observerObject[idParent] = {
+                              identifier: 'f'
+                          }
+                      } else {
+                          observerObject[idParent][identifier] = 'f'
+                      }
+                  }
+              }
+              const sObserverObject = JSON.stringify(observerObject)
+              // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
+              await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${parentPubkey}`;
           }
-        }
-        res.status(200).json(response)
-    }
+          const endTimestamp = Date.now()
+          const duration = endTimestamp - startTimestamp + ' msec'
+          const response:ResponseData = {
+            success: true,
+            message: 'api/manageData/blockOfUsers/createObserverObject results:',
+            data: {
+              duration: duration
+            }
+          }
+          res.status(200).json(response)
+      }
   } catch (error) {
     console.log(error)
     const response:ResponseData = {

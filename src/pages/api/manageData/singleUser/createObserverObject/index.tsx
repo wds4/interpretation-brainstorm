@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
 import { verifyPubkeyValidity } from '@/helpers/nip19';
 import { ObserverObjectV0Compact } from '@/typesUpdated';
-// import 'websocket-polyfill'
 
 /*
 usage:
@@ -12,7 +11,6 @@ https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObs
 
 TODO: option to support npub in addition to pubkey
 */
-
 
 type ResponseData = {
   success: boolean,
@@ -48,6 +46,7 @@ export default async function handler(
         const res0 = await client.sql`SELECT id, pubkey FROM users;`;
         const res1 = await client.sql`SELECT * FROM users WHERE pubkey=${pubkeyParent};`;
         
+
         const observerObject:ObserverObjectV0Compact = {}
         const idLookup:IdLookup = {}
         if (res0.rowCount) {
@@ -101,6 +100,9 @@ export default async function handler(
           const sObserverObject = JSON.stringify(observerObject)
           // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
           await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
+          
+          
+          
           const response:ResponseData = {
             success: true,
             message: 'api/manageData/singleUser/createObserverObject results:',
@@ -113,7 +115,6 @@ export default async function handler(
             }
           }
           res.status(200).json(response)
-
         }
         const response:ResponseData = {
           success: true,
