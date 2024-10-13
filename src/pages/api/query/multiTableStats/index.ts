@@ -69,7 +69,7 @@ export default async function handler(
               haveFollowsAndMutesBeenInput:res6.rowCount,
               followsCreatedAtNotZero:res7.rowCount,
               mutesCreatedAtNotZero:res8.rowCount,
-              resUsersTableSize
+              resUsersTableSize: resUsersTableSize.rows[0].pg_size_pretty
             },
             mydata: {
               pubkey: pubkey1,
