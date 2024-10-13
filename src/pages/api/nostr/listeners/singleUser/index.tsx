@@ -25,7 +25,9 @@ const explicitRelayUrls = [
 const ndk = new NDK({explicitRelayUrls})
 
 type ResponseData = {
+  success: boolean
   message: string
+  data?: object
 }
 
 const returnFollows = (event: NDKEvent) => {
@@ -42,8 +44,7 @@ const returnFollows = (event: NDKEvent) => {
       }
     }
   }
-  const sFollows = JSON.stringify(aFollows)
-  return sFollows
+  return aFollows
 }
 
 const returnMutes = (event: NDKEvent) => {
@@ -60,8 +61,7 @@ const returnMutes = (event: NDKEvent) => {
       }
     }
   }
-  const sMutes = JSON.stringify(aMutes)
-  return sMutes
+  return aMutes
 }
 
 export default async function handler(
@@ -73,11 +73,20 @@ export default async function handler(
     // TODO: support npub
   }
   if (!searchParams.pubkey) {
-    res.status(200).json({ message: 'updateFollowsAndMutesSingleUser: pubkey not provided' })
+    const response:ResponseData = {
+      success: true,
+      message: `updateFollowsAndMutesSingleUser: pubkey not provided`
+    }
+    res.status(500).json(response)
   }
   if (searchParams.pubkey) {
     const pubkey1 = searchParams.pubkey
     const currentTimestamp = Math.floor(Date.now() / 1000)
+    let numFollows = 0
+    let kind3timestamp:number|undefined = 0
+    let numMutes = 0
+    let kind10000timestamp:number|undefined = 0
+    const startTimestamp = Date.now()
     if ((typeof pubkey1 == 'string') && (verifyPubkeyValidity(pubkey1)) ) {
       const client = await db.connect();
       const result_exists = await client.sql`SELECT EXISTS(SELECT 1 FROM users WHERE pubkey=${pubkey1}) AS "exists"`
@@ -98,21 +107,46 @@ export default async function handler(
         sub1.on('event', async (event) => {
           if (event.kind == 3) {
             // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
-            const sFollows:string = returnFollows(event)
+            const aFollows:string[] = returnFollows(event)
+            const sFollows = JSON.stringify(aFollows)
+            numFollows = aFollows.length
+            kind3timestamp = event.created_at
             const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
             console.log('sql result_update_follows:')
             console.log(result_update_follows)
           }
           if (event.kind == 10000) {
             // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
-            const sMutes:string = returnMutes(event)
+            const aMutes:string[] = returnMutes(event)
+            const sMutes = JSON.stringify(aMutes)
+            numMutes = aMutes.length
+            kind10000timestamp = event.created_at
             const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
             console.log('sql result_update_mutes:')
             console.log(result_update_mutes)
           }
         })
         sub1.on('eose', async () => {
-          res.status(200).json({ message: 'updateFollowsAndMutesSingleUser: ndk eose received; All done!!!' })
+          const endTimestamp = Date.now()
+          const duration = endTimestamp - startTimestamp + ' msec'
+          const response:ResponseData = {
+            success: true,
+            message: `updateFollowsAndMutesSingleUser: ndk eose received; All done!!!`,
+            data: {
+              kind3event: {
+                created_at: kind3timestamp,
+                numFollows: numFollows
+              },
+              kind10000event: {
+                created_at: kind3timestamp,
+                numMutes: numMutes
+              },
+              start: startTimestamp,
+              end: endTimestamp,
+              duration: duration
+            }
+          }
+          res.status(200).json(response)
         })
       } catch (error) {
         console.log(error)
@@ -120,6 +154,12 @@ export default async function handler(
         console.log('releasing the db client now')
         client.release();
       }
+    } else {
+      const response:ResponseData = {
+        success: true,
+        message: `updateFollowsAndMutesSingleUser: the provided pubkey is invalid`
+      }
+      res.status(500).json(response)
     }
   }
 }
