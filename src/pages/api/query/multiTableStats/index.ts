@@ -35,7 +35,9 @@ export default async function handler(
       const client = await db.connect()
       console.log('============ connecting the db client now')
       try {
-        const resMe = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
+        const resultMeUsers = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
+        const resultMeCustomers = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkey1}`;
+        const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
         const res1 = await client.sql`SELECT id FROM users`;
         const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
@@ -46,7 +48,7 @@ export default async function handler(
         const res7 = await client.sql`SELECT id FROM users WHERE followsCreatedAt > 0`;
         const res8 = await client.sql`SELECT id FROM users WHERE mutesCreatedAt > 0`;
 
-        console.log('====== res1Me: ' + resMe.rowCount)
+        console.log('====== res1Me: ' + resultMeUsers.rowCount)
         console.log('====== res1: ' + res1.rowCount)
         console.log('====== res2: ' + res2.rowCount)
         console.log('====== res3: ' + res3.rowCount)
@@ -72,11 +74,19 @@ export default async function handler(
               usersTableSize: resUsersTableSize.rows[0].pg_size_pretty
             },
             mydata: {
-              pubkey: pubkey1,
-              id: resMe.rows[0].id,
-              numFollows: resMe.rows[0].follows.length,
-              numMutes: resMe.rows[0].mutes.length,
-              observerObject: resMe.rows[0].observerobject
+              customers: {
+                id: resultMeCustomers.rows[0].id,
+              },
+              dosSummaries: {
+                dosData: resultMeDosSummaries.rows[0].dosdata,
+              },
+              users: {
+                pubkey: pubkey1,
+                id: resultMeUsers.rows[0].id,
+                numFollows: resultMeUsers.rows[0].follows.length,
+                numMutes: resultMeUsers.rows[0].mutes.length,
+                observerObject: resultMeUsers.rows[0].observerobject
+              }
             }
           }
         }
