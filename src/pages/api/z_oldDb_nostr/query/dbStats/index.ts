@@ -3,7 +3,7 @@ import { db } from "@vercel/postgres";
 
 /*
 usage:
-http://localhost:3000/api/nostr/query/dbStats
+http://localhost:3000/api/z_oldDb_nostr/query/dbStats
 https://interpretation-brainstorm.vercel.app/api/z_oldDb_nostr/query/dbStats
 */
 
@@ -29,18 +29,23 @@ export default async function handler(
     }
   }
   try {
-    const res1 = await client.sql`SELECT * FROM users`;
-    console.log(res1)
-    const res2 = await client.sql`SELECT * FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
-    console.log(res2)
-    const res3 = await client.sql`SELECT * FROM users WHERE JSONB_ARRAY_LENGTH(follows) = 0`;
-    console.log(res3)
-    const res4 = await client.sql`SELECT * FROM users WHERE whenlastqueriedfollowsandmutes > 0`;
-    console.log(res4)
-    const res5 = await client.sql`SELECT * FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
-    console.log(res5)
-    const res6 = await client.sql`SELECT * FROM users WHERE haveFollowsAndMutesBeenInput = true`;
-    console.log(res6)
+    const res1 = await client.sql`SELECT id FROM users`;
+    console.log('====== res1: ' + res1.rowCount)
+
+    const res4 = await client.sql`SELECT id FROM users WHERE whenlastqueriedfollowsandmutes > 0`;
+    console.log('====== res4: ' + res4.rowCount)
+    const res5 = await client.sql`SELECT id, follows FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
+    console.log('====== res5: ' + res5.rowCount)
+    const res6 = await client.sql`SELECT id, haveFollowsAndMutesBeenInput FROM users WHERE haveFollowsAndMutesBeenInput = true`;
+    console.log('====== res6: ' + res6.rowCount)
+
+    const res3 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) = 0`;
+    console.log('====== res3: ' + res3.rowCount)
+
+    const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
+    console.log('====== res2: ' + res2.rowCount)
+
+
     response.rows = {
       number: res1.rowCount,
       withFollows: res2.rowCount,

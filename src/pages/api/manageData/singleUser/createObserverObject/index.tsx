@@ -135,7 +135,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: 'api/manageData/singleUser: the provided pubkey is invalid',
+        message: 'api/manageData/singleUser/createObserverObject: the provided pubkey is invalid',
       }
       res.status(500).json(response)
     }
