@@ -34,7 +34,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: 'api/manageData/singleUser: pubkey not provided',
+      message: 'api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable: pubkey not provided',
     }
     res.status(500).json(response)
   }
@@ -59,7 +59,7 @@ export default async function handler(
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
             const response:ResponseData = {
               success: true,
-              message: 'api/manageData/singleUser results:',
+              message: 'api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable results:',
               userData: {
                 pubkey: res1.rows[0].pubkey,
                 numRows: res1.rowCount,
@@ -84,7 +84,7 @@ export default async function handler(
     } else {
       const response:ResponseData = {
         success: false,
-        message: 'api/manageData/singleUser: the provided pubkey is invalid',
+        message: 'api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable: the provided pubkey is invalid',
       }
       res.status(500).json(response)
     }

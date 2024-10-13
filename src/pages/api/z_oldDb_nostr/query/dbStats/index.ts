@@ -4,7 +4,7 @@ import { db } from "@vercel/postgres";
 /*
 usage:
 http://localhost:3000/api/nostr/query/dbStats
-https://interpretation-brainstorm.vercel.app/api/nostr/query/dbStats
+https://interpretation-brainstorm.vercel.app/api/z_oldDb_nostr/query/dbStats
 */
 
 type ResponseData = {
@@ -56,6 +56,4 @@ export default async function handler(
   } finally {
     client.release()
   }
-  response.message = 'You have reached the nostr: query: dbStats API endpoint. Hooray!'
-  res.status(200).json(response)
 } 
