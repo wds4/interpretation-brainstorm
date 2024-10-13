@@ -25,7 +25,9 @@ export default async function handler(
       withoutFollows: 0,
       queriedFollowsAndMutes: 0,
       neverQueriedFollowsAndMutes: 0,
-      haveFollowsBeenInput: 0
+      haveFollowsAndMutesBeenInput: 0,
+      followsCreatedAtNotZero: 0,
+      mutesCreatedAtNotZero: 0
     }
   }
   try {
@@ -44,7 +46,10 @@ export default async function handler(
 
     const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
     console.log('====== res2: ' + res2.rowCount)
-
+    const res7 = await client.sql`SELECT id FROM users WHERE followsCreatedAt > 0`;
+    console.log('====== res7: ' + res7.rowCount)
+    const res8 = await client.sql`SELECT id FROM users WHERE mutesCreatedAt > 0`;
+    console.log('====== res8: ' + res8.rowCount)
 
     response.rows = {
       number: res1.rowCount,
@@ -52,7 +57,9 @@ export default async function handler(
       withoutFollows: res3.rowCount,
       queriedFollowsAndMutes: res4.rowCount,
       neverQueriedFollowsAndMutes:res5.rowCount,
-      haveFollowsBeenInput:res6.rowCount
+      haveFollowsAndMutesBeenInput:res6.rowCount,
+      followsCreatedAtNotZero:res7.rowCount,
+      mutesCreatedAtNotZero:res8.rowCount
     }
     response.message = 'Results of your dbStats query:'
     res.status(200).json(response)

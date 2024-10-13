@@ -48,7 +48,7 @@ export default async function handler(
           await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
           // console.log('inserted pubkey: ' +pk)
         }
-        await client.sql`UPDATE users SET havefollowsbeeninput = true, whenlastinputfollowsattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
+        await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
         const aMutes = res1.rows[0].mutes
         response.message = 'Results of your singleUser query:'
         response.userData = {

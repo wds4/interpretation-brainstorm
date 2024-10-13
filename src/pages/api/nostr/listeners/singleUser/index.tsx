@@ -89,6 +89,13 @@ export default async function handler(
     const startTimestamp = Date.now()
     if ((typeof pubkey1 == 'string') && (verifyPubkeyValidity(pubkey1)) ) {
       const client = await db.connect();
+      const result_timestamps = await client.sql`SELECT followsCreatedAt, mutesCreatedAt FROM users WHERE pubkey=${pubkey1}`
+      let previousFollowsCreatedAt = 0
+      let previousMutesCreatedAt = 0
+      if (result_timestamps.rowCount == 1) {
+        previousFollowsCreatedAt = result_timestamps.rows[0].followsCreatedAt
+        previousMutesCreatedAt = result_timestamps.rows[0].mutesCreatedAt
+      }
       const result_exists = await client.sql`SELECT EXISTS(SELECT 1 FROM users WHERE pubkey=${pubkey1}) AS "exists"`
       console.log(result_exists)
       if (result_exists.rows[0].exists == true) {
@@ -106,24 +113,26 @@ export default async function handler(
         const sub1 = ndk.subscribe(filter)
         sub1.on('event', async (event) => {
           if (event.kind == 3) {
-            // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
             const aFollows:string[] = returnFollows(event)
             const sFollows = JSON.stringify(aFollows)
             numFollows = aFollows.length
             kind3timestamp = event.created_at
-            const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-            console.log('sql result_update_follows:')
-            console.log(result_update_follows)
+            if (event.created_at && event.created_at > previousFollowsCreatedAt) {
+              const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+              // console.log('sql result_update_follows:')
+              console.log(typeof result_update_follows)
+            }
           }
           if (event.kind == 10000) {
-            // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
             const aMutes:string[] = returnMutes(event)
             const sMutes = JSON.stringify(aMutes)
             numMutes = aMutes.length
             kind10000timestamp = event.created_at
-            const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-            console.log('sql result_update_mutes:')
-            console.log(result_update_mutes)
+            if (event.created_at && event.created_at > previousMutesCreatedAt) {
+              const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+              // console.log('sql result_update_mutes:')
+              console.log(typeof result_update_mutes)
+            }
           }
         })
         sub1.on('eose', async () => {
