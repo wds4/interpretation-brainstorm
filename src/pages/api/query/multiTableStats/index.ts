@@ -44,9 +44,12 @@ export default async function handler(
         const res3 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) = 0`;
         const res4 = await client.sql`SELECT id FROM users WHERE whenlastqueriedfollowsandmutes > 0`;
         const res5 = await client.sql`SELECT id, follows FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
-        const res6 = await client.sql`SELECT id, haveFollowsAndMutesBeenInput FROM users WHERE haveFollowsAndMutesBeenInput = true`;
+        const res6 = await client.sql`SELECT id FROM users WHERE haveFollowsAndMutesBeenInput = true`;
+        const res6b = await client.sql`SELECT id FROM users WHERE whenlastqueriedfollowsandmutes > 0 AND haveFollowsAndMutesBeenInput = false`;
         const res7 = await client.sql`SELECT id FROM users WHERE followsCreatedAt > 0`;
         const res8 = await client.sql`SELECT id FROM users WHERE mutesCreatedAt > 0`;
+        const res9 = await client.sql`SELECT id FROM users WHERE haveFollowsAndMutesBeenInput = true AND whenlastcreatedobserverobject = 0`;
+        const res10 = await client.sql`SELECT id FROM users WHERE whenlastcreatedobserverobject > 0`;
 
         console.log('====== res1Me: ' + resultMeUsers.rowCount)
         console.log('====== res1: ' + res1.rowCount)
@@ -72,6 +75,20 @@ export default async function handler(
               followsCreatedAtNotZero:res7.rowCount,
               mutesCreatedAtNotZero:res8.rowCount,
               usersTableSize: resUsersTableSize.rows[0].pg_size_pretty
+            },
+            blockTasks: {
+              step1_nostrListener: {
+                awaiting: res5.rowCount,
+                alreadyListened: res4.rowCount
+              },
+              step2_insertFollowsAndMutesIntoUsersTable: {
+                awaiting: res6b.rowCount,
+                alreadyDone: res6.rowCount
+              },
+              step3_createObserverObject: {
+                awaiting: res9.rowCount,
+                alreadyDone: res10.rowCount
+              }
             },
             mydata: {
               customers: {
