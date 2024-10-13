@@ -74,7 +74,7 @@ export default async function handler(
   }
   if (!searchParams.pubkey) {
     const response:ResponseData = {
-      success: true,
+      success: false,
       message: `updateFollowsAndMutesSingleUser: pubkey not provided`
     }
     res.status(500).json(response)
