@@ -36,7 +36,7 @@ export default async function handler(
       console.log('============ connecting the db client now')
       try {
         const resMe = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
-        const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
+        // const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
         const res1 = await client.sql`SELECT id FROM users`;
         const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
         const res3 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) = 0`;
@@ -69,7 +69,7 @@ export default async function handler(
               haveFollowsAndMutesBeenInput:res6.rowCount,
               followsCreatedAtNotZero:res7.rowCount,
               mutesCreatedAtNotZero:res8.rowCount,
-              resUsersTableSize: resUsersTableSize.rows[0].pg_size_pretty
+              resUsersTableSize: 0
             },
             mydata: {
               pubkey: pubkey1,
