@@ -35,7 +35,7 @@ export default async function handler(
   if (!searchParams.pubkey) {
     const response:ResponseData = {
       success: false,
-      message: 'api/manageData/singleUser: pubkey not provided',
+      message: 'api/manageData/singleUser/createObserverObject: pubkey not provided',
     }
     res.status(500).json(response)
   }
