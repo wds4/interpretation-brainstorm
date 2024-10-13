@@ -39,7 +39,7 @@ export default async function handler(
     console.log(res4)
     const res5 = await client.sql`SELECT * FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
     console.log(res5)
-    const res6 = await client.sql`SELECT * FROM users WHERE haveFollowsBeenInput = true`;
+    const res6 = await client.sql`SELECT * FROM users WHERE haveFollowsAndMutesBeenInput = true`;
     console.log(res6)
     response.rows = {
       number: res1.rowCount,
