@@ -138,7 +138,7 @@ export default async function handler(
                 numFollows: numFollows
               },
               kind10000event: {
-                created_at: kind3timestamp,
+                created_at: kind10000timestamp,
                 numMutes: numMutes
               },
               start: startTimestamp,
