@@ -41,11 +41,12 @@ export default async function handler(
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
         const res1 = await client.sql`SELECT id FROM users`;
         const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
+        const res2b = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) > 0 OR JSONB_ARRAY_LENGTH(mutes) > 0`;
         const res3 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) = 0`;
         const res4 = await client.sql`SELECT id FROM users WHERE whenlastqueriedfollowsandmutes > 0`;
         const res5 = await client.sql`SELECT id, follows FROM users WHERE whenlastqueriedfollowsandmutes = 0`;
         const res6 = await client.sql`SELECT id FROM users WHERE haveFollowsAndMutesBeenInput = true`;
-        const res6b = await client.sql`SELECT id FROM users WHERE whenlastqueriedfollowsandmutes > 0 AND haveFollowsAndMutesBeenInput = false`;
+        const res6b = await client.sql`SELECT id FROM users WHERE (followsCreatedAt > 0 OR mutesCreatedAt > 0) AND whenlastqueriedfollowsandmutes > 0 AND haveFollowsAndMutesBeenInput = false`;
         const res7 = await client.sql`SELECT id FROM users WHERE followsCreatedAt > 0`;
         const res8 = await client.sql`SELECT id FROM users WHERE mutesCreatedAt > 0`;
         const res9 = await client.sql`SELECT id FROM users WHERE haveFollowsAndMutesBeenInput = true AND whenlastcreatedobserverobject = 0`;
@@ -54,10 +55,12 @@ export default async function handler(
         console.log('====== res1Me: ' + resultMeUsers.rowCount)
         console.log('====== res1: ' + res1.rowCount)
         console.log('====== res2: ' + res2.rowCount)
+        console.log('====== res2b: ' + res2b.rowCount)
         console.log('====== res3: ' + res3.rowCount)
         console.log('====== res4: ' + res4.rowCount)
         console.log('====== res5: ' + res5.rowCount)
         console.log('====== res6: ' + res6.rowCount)
+        console.log('====== res6b: ' + res6b.rowCount)
         console.log('====== res7: ' + res7.rowCount)
         console.log('====== res8: ' + res8.rowCount)
     
@@ -82,7 +85,7 @@ export default async function handler(
                 alreadyListened: res4.rowCount
               },
               step2_insertFollowsAndMutesIntoUsersTable: {
-                awaiting: res6b.rowCount,
+                awaiting: res2b.rowCount,
                 alreadyDone: res6.rowCount
               },
               step3_createObserverObject: {
