@@ -93,7 +93,7 @@ export default async function handler(
               step3_createObserverObject: {
                 awaiting: res9.rowCount,
                 alreadyDone: res10.rowCount,
-                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?pubkey=n=10'
+                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=10'
               }
             },
             mydata: {

@@ -45,8 +45,6 @@ export default async function handler(
       try {
         const res0 = await client.sql`SELECT id, pubkey FROM users;`;
         const res1 = await client.sql`SELECT * FROM users WHERE pubkey=${pubkeyParent};`;
-        
-
         const observerObject:ObserverObjectV0Compact = {}
         const idLookup:IdLookup = {}
         if (res0.rowCount) {
@@ -100,8 +98,6 @@ export default async function handler(
           const sObserverObject = JSON.stringify(observerObject)
           // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
           await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
-          
-          
           
           const response:ResponseData = {
             success: true,

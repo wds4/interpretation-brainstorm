@@ -6,7 +6,7 @@ import { ObserverObjectV0Compact } from '@/typesUpdated';
 usage:
 http://localhost:3000/api/manageData/blockOfUsers/createObserverObject?n=10
 
-https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?pubkey=n=10
+https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=10
 
 This endpoint searches for follows and mutes from a block of pubkeys
 and enters them into the intepretation engine database. 
@@ -37,10 +37,8 @@ export default async function handler(
   const client = await db.connect();
   const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
-      // TODO -- all of it
       const res0 = await client.sql`SELECT id, pubkey FROM users;`;
       const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput=true ORDER BY whenlastcreatedobserverobject ASC LIMIT ${numUsers};`;
-      const observerObject:ObserverObjectV0Compact = {}
       const idLookup:IdLookup = {}
       if (res0.rowCount) {
         for (let x=0; x < res0.rowCount; x++) {
@@ -50,8 +48,9 @@ export default async function handler(
         }
       }
       if (res1.rowCount) {
+          const observerObject:ObserverObjectV0Compact = {}
           for (let u=0; u < res1.rowCount; u++) {
-              const parentPubkey = res1.rows[u].pubkey
+              const pubkeyParent = res1.rows[u].pubkey
               const idParent = res1.rows[u].id
               // we process mutes first
               const aMutes = res1.rows[u].mutes;
@@ -94,7 +93,7 @@ export default async function handler(
               }
               const sObserverObject = JSON.stringify(observerObject)
               // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
-              await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${parentPubkey}`;
+              await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
           }
           const endTimestamp = Date.now()
           const duration = endTimestamp - startTimestamp + ' msec'
