@@ -11,55 +11,55 @@
         }
     ],
     "functions": {
-        "pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.ts": {
+        "pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.*": {
             "maxDuration": 180
         },
-        "src/pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.ts": {
+        "src/pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.*": {
             "maxDuration": 180
         },
-        "pages/api/nostr/listeners/blockOfUsers/*.ts": {
+        "pages/api/nostr/listeners/blockOfUsers/*.*": {
             "maxDuration": 180
         },
-        "src/pages/api/nostr/listeners/blockOfUsers/*.ts": {
+        "src/pages/api/nostr/listeners/blockOfUsers/*.*": {
             "maxDuration": 180
         },
-        "pages/api/manageData/blockOfUsers/createObserverObject/*.ts": {
+        "pages/api/manageData/blockOfUsers/createObserverObject/*.*": {
             "maxDuration": 180
         },
-        "src/pages/api/manageData/blockOfUsers/createObserverObject/*.ts": {
+        "src/pages/api/manageData/blockOfUsers/createObserverObject/*.*": {
             "maxDuration": 180
         },
-        "pages/api/requestInterpretation/*.ts": {
+        "pages/api/requestInterpretation/*.*": {
             "maxDuration": 180
         },
-        "src/pages/api/requestInterpretation/*.ts": {
+        "src/pages/api/requestInterpretation/*.*": {
             "maxDuration": 180
         },
-        "pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
+        "pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.*": {
             "maxDuration": 180
         },
-        "pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
+        "pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.*": {
             "maxDuration": 180
         },
-        "pages/api/nostr/query/singleUser/dos/index.ts": {
+        "pages/api/nostr/query/singleUser/dos/index.*": {
             "maxDuration": 180
         },
-        "src/pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.ts": {
+        "src/pages/api/nostr/updateFollowsAndMutesNextUserBlock/index.*": {
             "maxDuration": 180
         },
-        "src/pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.ts": {
+        "src/pages/api/nostr/inputFollowsIntoDbNextUserBlock/index.*": {
             "maxDuration": 180
         },
-        "src/pages/api/nostr/query/singleUser/dos/index.ts": {
+        "src/pages/api/nostr/query/singleUser/dos/index.*": {
             "maxDuration": 180
         },
-        "pages/api/*.ts": {
+        "pages/api/*.*": {
             "maxDuration": 60
         },
-        "pages/api/nostr/query/singleUser/ratingsTable/*.ts": {
+        "pages/api/nostr/query/singleUser/ratingsTable/*.*": {
             "maxDuration": 180
         },
-        "src/pages/api/nostr/query/singleUser/ratingsTable/*.ts": {
+        "src/pages/api/nostr/query/singleUser/ratingsTable/*.*": {
             "maxDuration": 180
         }
     }
