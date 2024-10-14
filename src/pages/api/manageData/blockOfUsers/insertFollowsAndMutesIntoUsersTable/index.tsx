@@ -30,8 +30,8 @@ export default async function handler(
     numUsers = Number(searchParams.n)
   }
   const startTimestamp = Date.now()
+  let numNewInserts = 0
   const client = await db.connect();
-  
   try {
     const resCurrent = await client.sql`SELECT pubkey FROM users`
     const knownPubkeys = []
@@ -51,6 +51,7 @@ export default async function handler(
                 if (!knownPubkeys.includes(pk)) {
                   await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
                   knownPubkeys.push(pk)
+                  numNewInserts++
                 }
             }
             const aMutes = res1.rows[u].mutes;
@@ -59,6 +60,7 @@ export default async function handler(
                 if (!knownPubkeys.includes(pk)) {
                   await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
                   knownPubkeys.push(pk)
+                  numNewInserts++
                 }
             }
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${parentPubkey}`;
@@ -70,6 +72,7 @@ export default async function handler(
           message: 'api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable results:',
           data: {
             numParentPubkeysProcessed: res1.rowCount,
+            numNewInserts,
             duration: duration
           }
         }

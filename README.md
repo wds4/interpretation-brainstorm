@@ -33,6 +33,8 @@ npm install nostr-hooks
 
 to place in vercel.json:
 
+old:
+
 ```
     "crons": [
         {
@@ -42,6 +44,17 @@ to place in vercel.json:
         {
             "path": "/api/nostr/inputFollowsIntoDbNextUserBlock?n=50",
             "schedule": "5,15,25,35,45,55 * * * *"
+        }
+    ],
+```
+
+updated: 
+
+```
+    "crons": [
+        {
+            "path": "/api/nostr/listeners/blockOfUsers?n=900",
+            "schedule": "*/2 * * * *"
         }
     ],
 ```

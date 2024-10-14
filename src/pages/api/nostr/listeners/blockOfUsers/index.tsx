@@ -6,8 +6,8 @@ import NDK, { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
 /*
 This endpoint queries nostr for kinds 3 and 10000 events from a block of users
 usage: 
-http://localhost:3000/api/nostr/listeners/blockOfUsers?n=5
-https://interpretation-brainstorm.vercel.app/api/nostr/listeners/blockOfUsers?n=5
+http://localhost:3000/api/nostr/listeners/blockOfUsers?n=900
+https://interpretation-brainstorm.vercel.app/api/nostr/listeners/blockOfUsers?n=900
 
 n indicates the max size of the block
 To generate the block, select users, order by whenLastQueriedFollowsAndMutes
@@ -69,7 +69,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  let numUsers = 5 // the default number of users to update
+  let numUsers = 900 // the default number of users to update
   if (searchParams.n) {
     numUsers = Number(searchParams.n)
   }
