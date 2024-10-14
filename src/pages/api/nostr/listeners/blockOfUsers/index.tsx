@@ -89,11 +89,7 @@ export default async function handler(
         const mutesCreatedAt = res1.rows[x].mutescreatedat
         followsCreatedAtLookup[pk] = followsCreatedAt
         mutesCreatedAtLookup[pk] = mutesCreatedAt
-
-        // console.log('process next pk: ' + pk)
         authors.push(pk)
-        
-        // console.log(foo)
       }  
       await ndk.connect()
       const filter:NDKFilter = { kinds: [3, 10000], authors }
@@ -125,8 +121,12 @@ export default async function handler(
       })
       sub1.on('eose', async () => {
         // update whenLastQueriedFollowsAndMutes for all pubkeys, whether or not events were received
-        const sAuthors = JSON.stringify(authors)
-        await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey IN (${sAuthors})`;
+        // TODO: change this to just one update, WHERE pubkey IN ... 
+        for (let x=0; x < authors.length; x++) {
+          const pk = authors[x]
+          await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey = ${pk}`;
+        } 
+        
         console.log('EOSE RECEIVED, db client being released!!!!!!!!!!!!!!!!!!')
         client.release();
         const response:ResponseData = {
