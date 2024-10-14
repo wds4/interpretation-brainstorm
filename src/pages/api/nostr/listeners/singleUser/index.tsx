@@ -89,12 +89,12 @@ export default async function handler(
     const startTimestamp = Date.now()
     if ((typeof pubkey1 == 'string') && (verifyPubkeyValidity(pubkey1)) ) {
       const client = await db.connect();
-      const result_timestamps = await client.sql`SELECT followsCreatedAt, mutesCreatedAt FROM users WHERE pubkey=${pubkey1}`
+      const result_timestamps = await client.sql`SELECT followscreatedat, mutescreatedat FROM users WHERE pubkey=${pubkey1}`
       let previousFollowsCreatedAt = 0
       let previousMutesCreatedAt = 0
       if (result_timestamps.rowCount == 1) {
-        previousFollowsCreatedAt = result_timestamps.rows[0].followsCreatedAt
-        previousMutesCreatedAt = result_timestamps.rows[0].mutesCreatedAt
+        previousFollowsCreatedAt = result_timestamps.rows[0].followscreatedat
+        previousMutesCreatedAt = result_timestamps.rows[0].mutescreatedat
       }
       const result_exists = await client.sql`SELECT EXISTS(SELECT 1 FROM users WHERE pubkey=${pubkey1}) AS "exists"`
       console.log(result_exists)
