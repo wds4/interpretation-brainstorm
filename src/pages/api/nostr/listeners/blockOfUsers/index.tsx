@@ -74,6 +74,7 @@ export default async function handler(
     numUsers = Number(searchParams.n)
   }
   const currentTimestamp = Math.floor(Date.now() / 1000)
+  const startTimestamp = Date.now()
   const client = await db.connect();
   const authors:string[] = []
   try {
@@ -129,12 +130,15 @@ export default async function handler(
         
         console.log('EOSE RECEIVED, db client being released!!!!!!!!!!!!!!!!!!')
         client.release();
+        const endTimestamp = Date.now()
+        const duration = endTimestamp - startTimestamp + ' msec'
         const response:ResponseData = {
           success: true,
           message: `updateFollowsAndMutesNextUserBlock: ndk eose received; All done!`,
           data: {
             numFollowUpdates,
-            numMuteUpdates
+            numMuteUpdates,
+            duration
           }
         }
         res.status(200).json(response)

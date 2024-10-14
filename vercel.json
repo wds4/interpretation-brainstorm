@@ -18,10 +18,10 @@
             "maxDuration": 180
         },
         "pages/api/nostr/listeners/blockOfUsers/*.*": {
-            "maxDuration": 180
+            "maxDuration": 60
         },
         "src/pages/api/nostr/listeners/blockOfUsers/*.*": {
-            "maxDuration": 180
+            "maxDuration": 60
         },
         "pages/api/manageData/blockOfUsers/createObserverObject/*.*": {
             "maxDuration": 180
