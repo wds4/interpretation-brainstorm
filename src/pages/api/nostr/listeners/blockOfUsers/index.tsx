@@ -75,12 +75,12 @@ export default async function handler(
   }
   const currentTimestamp = Math.floor(Date.now() / 1000)
   const client = await db.connect();
+  const authors:string[] = []
   try {
     // select the block of users
     const res1 = await client.sql`SELECT * FROM users ORDER BY whenLastQueriedFollowsAndMutes ASC LIMIT ${numUsers}`;
     // console.log('inputFollowsIntoDbNextUserBlock, number of eligible users: ' + res1.rowCount)
     if (res1.rowCount) {
-      const authors = []
       const followsCreatedAtLookup:{[key:string]: number} = {}
       const mutesCreatedAtLookup:{[key:string]: number} = {}
       for (let x=0; x < res1.rowCount; x++) {
@@ -92,7 +92,7 @@ export default async function handler(
 
         // console.log('process next pk: ' + pk)
         authors.push(pk)
-        await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pk}`;
+        
         // console.log(foo)
       }  
       await ndk.connect()
@@ -107,7 +107,7 @@ export default async function handler(
             const aFollows:string[] = returnFollows(event)
             const sFollows = JSON.stringify(aFollows)
             console.log(`================= pubkey: ${event.pubkey} has ${aFollows.length} follows`)
-            await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+            await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
             // update followsCreatedAtLookup to address the situation that two kind3 events from the same user are received in succession
             followsCreatedAtLookup[event.pubkey] = event.created_at
           }
@@ -117,13 +117,16 @@ export default async function handler(
             numMuteUpdates++
             const aMutes:string[] = returnMutes(event)
             const sMutes = JSON.stringify(aMutes)
-            await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+            await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
             // update mutesCreatedAtLookup to address the situation that two kind10000 events from the same user are received in succession
             mutesCreatedAtLookup[event.pubkey] = event.created_at
           }
         }
       })
       sub1.on('eose', async () => {
+        // update whenLastQueriedFollowsAndMutes for all pubkeys, whether or not events were received
+        const sAuthors = JSON.stringify(authors)
+        await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey IN (${sAuthors})`;
         console.log('EOSE RECEIVED, db client being released!!!!!!!!!!!!!!!!!!')
         client.release();
         const response:ResponseData = {
