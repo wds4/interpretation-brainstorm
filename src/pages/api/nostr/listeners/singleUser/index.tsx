@@ -121,6 +121,7 @@ export default async function handler(
             kind3timestamp = event.created_at
             if (event.created_at && event.created_at > previousFollowsCreatedAt) {
               const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+              previousFollowsCreatedAt = event.created_at
               console.log('============ sql result_update_follows:')
               console.log(result_update_follows)
             }
@@ -132,6 +133,7 @@ export default async function handler(
             kind10000timestamp = event.created_at
             if (event.created_at && event.created_at > previousMutesCreatedAt) {
               const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+              previousMutesCreatedAt = event.created_at
               console.log('============ sql result_update_mutes:')
               console.log(result_update_mutes)
             }

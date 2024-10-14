@@ -87,7 +87,6 @@ export default async function handler(
           const sObserverObject = JSON.stringify(observerObject)
           // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
           await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
-          
           const response:ResponseData = {
             success: true,
             message: 'api/manageData/singleUser/createObserverObject results:',

@@ -108,6 +108,8 @@ export default async function handler(
             const sFollows = JSON.stringify(aFollows)
             console.log(`================= pubkey: ${event.pubkey} has ${aFollows.length} follows`)
             await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+            // update followsCreatedAtLookup to address the situation that two kind3 events from the same user are received in succession
+            followsCreatedAtLookup[event.pubkey] = event.created_at
           }
         }
         if (event.kind == 10000) {
@@ -116,6 +118,8 @@ export default async function handler(
             const aMutes:string[] = returnMutes(event)
             const sMutes = JSON.stringify(aMutes)
             await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+            // update mutesCreatedAtLookup to address the situation that two kind10000 events from the same user are received in succession
+            mutesCreatedAtLookup[event.pubkey] = event.created_at
           }
         }
       })

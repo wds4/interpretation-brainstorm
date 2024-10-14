@@ -13,7 +13,6 @@ and enters them into the intepretation engine database.
 The newly added rows in the database are the only rows that are updated.
 */
 
-
 type ResponseData = {
   success: boolean,
   message: string,
@@ -48,10 +47,12 @@ export default async function handler(
         }
       }
       if (res1.rowCount) {
-          const observerObject:ObserverObjectV0Compact = {}
+          // create the observerObject for each user in res1
           for (let u=0; u < res1.rowCount; u++) {
+              const observerObject:ObserverObjectV0Compact = {}
               const pubkeyParent = res1.rows[u].pubkey
               const idParent = res1.rows[u].id
+              observerObject[idParent] = {}
               // we process mutes first
               const aMutes = res1.rows[u].mutes;
               for (let x=0; x < aMutes.length; x++) {
@@ -61,13 +62,7 @@ export default async function handler(
                       identifier = idLookup[pk]
                   }
                   if (identifier != idParent) { // NO SELF RATING
-                      if (!observerObject[idParent]) {
-                          observerObject[idParent] = {
-                              identifier: 'm'
-                          }
-                      } else {
-                          observerObject[idParent][identifier] = 'm'
-                      }
+                      observerObject[idParent][identifier] = 'm'
                   }
               }
               // we process follows after mutes
@@ -81,14 +76,8 @@ export default async function handler(
                   if (idLookup[pk]) {
                       identifier = idLookup[pk]
                   }
-                  if (identifier != idParent) {
-                      if (!observerObject[idParent]) {
-                          observerObject[idParent] = {
-                              identifier: 'f'
-                          }
-                      } else {
-                          observerObject[idParent][identifier] = 'f'
-                      }
+                  if (identifier != idParent) { // NO SELF RATING
+                      observerObject[idParent][identifier] = 'f'
                   }
               }
               const sObserverObject = JSON.stringify(observerObject)
