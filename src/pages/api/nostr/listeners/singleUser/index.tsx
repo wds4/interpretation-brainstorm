@@ -109,7 +109,9 @@ export default async function handler(
       try {
         await ndk.connect()
         const filter:NDKFilter = { kinds: [3, 10000], authors: [pubkey1], limit: 10 }
-        await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pubkey1}`;
+        const result_update_timestamp = await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pubkey1}`;
+        console.log('============ sql result_update_timestamp:')
+        console.log(result_update_timestamp)
         const sub1 = ndk.subscribe(filter)
         sub1.on('event', async (event) => {
           if (event.kind == 3) {
@@ -119,8 +121,8 @@ export default async function handler(
             kind3timestamp = event.created_at
             if (event.created_at && event.created_at > previousFollowsCreatedAt) {
               const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-              // console.log('sql result_update_follows:')
-              console.log(typeof result_update_follows)
+              console.log('============ sql result_update_follows:')
+              console.log(result_update_follows)
             }
           }
           if (event.kind == 10000) {
@@ -130,8 +132,8 @@ export default async function handler(
             kind10000timestamp = event.created_at
             if (event.created_at && event.created_at > previousMutesCreatedAt) {
               const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-              // console.log('sql result_update_mutes:')
-              console.log(typeof result_update_mutes)
+              console.log('============ sql result_update_mutes:')
+              console.log(result_update_mutes)
             }
           }
         })
