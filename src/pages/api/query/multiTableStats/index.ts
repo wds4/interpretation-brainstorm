@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import { verifyPubkeyValidity } from '@/helpers/nip19';
+import { npubEncode, verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
@@ -70,8 +70,20 @@ export default async function handler(
             const oO = res10.rows[x].observerobject;
             const pubkey = res10.rows[x].pubkey;
             const id = res10.rows[x].id;
+            const npub:string = npubEncode(pubkey)
+            let numFollows = 0
+            if (oO && oO[id]) {
+              for (let z=0; z < Object.keys(oO[id]).length; z++) {
+                const foo = oO[id][z];
+                if (oO[id][z][foo] == 'f') {
+                  numFollows++
+                }
+              }
+            }
             observerObjectExamples[id] = {
               pubkey,
+              npub,
+              numFollows,
               id,
               oO: JSON.stringify(oO)
             }
