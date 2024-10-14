@@ -32,11 +32,9 @@ const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,
   for (let p=0; p < aLastDosIds.length; p++) {
     const id_parent = aLastDosIds[p]
     const aFollows = lookupFollowsById[id_parent]
-    // console.log(`dos: ${dos}; aLastDosIds: ${JSON.stringify(aLastDosIds)}; p: ${p}; id_parent: ${id_parent}; aFollows: ${JSON.stringify(aFollows)}`)
     for (let c=0; c < aFollows.length; c++) {
       const id_child = aFollows[c]
       const currentlyRecordedDos = lookupDoSById[id_child]
-      // console.log(`id_child: ${typeof id_child}; nextMinimumDos: ${nextMinimumDos} currentlyRecordedDos: ${currentlyRecordedDos}`)
       if (nextMinimumDos < currentlyRecordedDos) {
         lookupDoSById[id_child] = nextMinimumDos
         if (!aNextDosIds.includes(id_child)) {
@@ -45,7 +43,6 @@ const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,
       }
     }
   }
-  console.log(`dos: ${dos}; aLastDosIds: ${JSON.stringify(aLastDosIds)}; aNextDosIds: ${JSON.stringify(aNextDosIds)}`)
   return aNextDosIds
 }
 
@@ -71,12 +68,12 @@ export default async function handler(
       console.log('============ connecting the db client now')
       const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
-        const res0 = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenLastCreatedObserverObject > 0;`; // add more restrictions to limit number of returns
+        const resUsers = await client.sql`SELECT id, pubkey, observerobject FROM users;`;
+        const resUsersWithOo = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenLastCreatedObserverObject > 0;`;
         const resReferenceUser_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkeyParent};`;
         const resReferenceUser_customer = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkeyParent};`;
-        console.log('number of users with observerObjects:' + res0.rowCount)
-        console.log(typeof resReferenceUser_user)
-        if (res0.rowCount == 1) {
+        console.log('number of users with observerObjects:' + resUsersWithOo.rowCount)
+        if (resUsersWithOo.rowCount == 1) {
           // ? exit with error message
         }
         if (resReferenceUser_user.rowCount != 1) {
@@ -84,7 +81,6 @@ export default async function handler(
         }
         const refUserID = resReferenceUser_user.rows[0].id
         const refCustomerID = resReferenceUser_customer.rows[0].id
-        // console.log('refUserID: ' + refUserID)
         const aSeedIds = [refUserID]
         const lookupFollowsById:Obj1 = {}
         const lookupDoSById:Obj2 = {}
@@ -97,51 +93,48 @@ export default async function handler(
         lookupIdsByDos[5] = []
         lookupIdsByDos[6] = []
         lookupIdsByDos[999] = []
-        // console.log('lookupIdsByDos: ' + JSON.stringify(lookupIdsByDos, null, 4))
-        if (res0.rowCount) {
-            for (let x=0; x< res0.rowCount; x++) {
-                const id = res0.rows[x].id
-                const oO = res0.rows[x].observerobject
-                const numFoo = Object.keys(oO).length
-                console.log('+++++++++++++++++++++++++++')
-                console.log('x: ' + x + '; id: ' + id + '; numFoo: ' + numFoo)
-                if (!oO[id]) {
-                  lookupFollowsById[id] = []
-                  lookupDoSById[id] = 999
-                }
+        if (resUsers.rowCount) {
+            for (let x=0; x< resUsers.rowCount; x++) {
+                const id = resUsers.rows[x].id
+                lookupDoSById[id] = 999
+                const oO = resUsers.rows[x].observerobject
+                lookupFollowsById[id] = []
                 if (oO[id]) {
-                    // console.log('YES!!!!!!!!!!!!!!!!!!!!!!!!!')
                     const aFollowsAndMutes = Object.keys(oO[id])
-                    // console.log(`aFollowsAndMutes: ${JSON.stringify(aFollowsAndMutes)}`)
                     const aFollows = []
                     for (let z=0;z<aFollowsAndMutes.length;z++) {
-                        // console.log(`oO[id][z]: ${oO[id][z]}`)
                         if (oO[id][z] == 'f') {
                             aFollows.push(z)
                         }
                     }
-                    // console.log(`aFollows: ${JSON.stringify(aFollows)}`)
                     lookupFollowsById[id] = aFollows
-                    // console.log(`====== id: ${id};  lookupFollowsById: ${JSON.stringify(lookupFollowsById[id])}`)
-                    lookupDoSById[id] = 999
-                    if (aSeedIds.includes(id)) {
-                        lookupDoSById[id] = 0
-                    }
                 }
             }
         }
-
-        // console.log(`lookupFollowsById: ${JSON.stringify(lookupFollowsById,null,4)}`)
-        // console.log(`lookupDoSById: ${JSON.stringify(lookupDoSById,null,4)}`)
+        console.log('++++++++++++++++')
+        console.log(`lookupDoSById.length: ${Object.keys(lookupDoSById).length}`)
+        console.log(`resUsers.rowCount: ${resUsers.rowCount}`)
+        for (let u=0; u < aSeedIds.length; u++) {
+          lookupDoSById[u] = 0
+        }
 
         // calculate DoS
-        for (let d=0; d < 5; d++) {
+        for (let d=0; d < 7; d++) {
             lookupIdsByDos[d+1] = returnNextDosIds(d,lookupIdsByDos,lookupFollowsById,lookupDoSById)
         }
 
+        // TODO: calculate lookupIdsByDos[999]
+        Object.keys(lookupDoSById).forEach((key) => {
+          const k:number = Number(key)
+          if (lookupDoSById[k] && lookupDoSById[k] == 999) {
+            lookupIdsByDos[999].push(k)
+          }
+        })
+
         // save dosSummary in table: dosSummaries
         const oDosSummary = {
-          numUsersInDb: res0.rowCount,
+          numUsersInDb: resUsers.rowCount,
+          numUsersWithKnownObserverObject: resUsersWithOo.rowCount,
           dos0: lookupIdsByDos[0].length,
           dos1: lookupIdsByDos[1].length,
           dos2: lookupIdsByDos[2].length,
