@@ -59,6 +59,15 @@ updated:
     ]
 ```
 
+```
+    "crons": [
+        {
+            "path": "/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=500",
+            "schedule": "*/2 * * * *"
+        }
+    ]
+```
+
 ## json-schema
 
 ajv for schema validation
