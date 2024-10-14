@@ -62,30 +62,36 @@ export default async function handler(
         console.log('====== res6: ' + res6.rowCount)
         console.log('====== res6b: ' + res6b.rowCount)
         console.log('====== res7: ' + res7.rowCount)
-        console.log('====== res8: ' + res8.rowCount)
+        console.log('=== res8: ' + res8.rowCount)
 
+        console.log(`===== HEYyyyy `)
         const observerObjectExamples:{[key:number]: object} = {}
         if (res10.rowCount && res10.rowCount > 5) {
-          for (let x=0; x < 3; x++) {
+          console.log(`===== HEYyyyy AGAIN... `)
+          for (let x=0; x < 5; x++) {
             const oO = res10.rows[x].observerobject;
             const pubkey = res10.rows[x].pubkey;
             const id = res10.rows[x].id;
             const npub:string = npubEncode(pubkey)
+            console.log(`===== npub: ${npub}`)
             let numFollows = 0
+            
             if (oO && oO[id]) {
-              for (let z=0; z < Object.keys(oO[id]).length; z++) {
-                const foo = oO[id][z];
-                if (oO[id][z][foo] == 'f') {
+              const aRatees:string[] = Object.keys(oO[id])
+              for (let z=0; z < aRatees.length; z++) {
+                const nextRatee = aRatees[z]
+                if (oO[id][nextRatee] == 'f') {
                   numFollows++
                 }
               }
             }
+            
+            console.log(`===== npub: ${npub}; numFollows: ${numFollows}`)
             observerObjectExamples[id] = {
               pubkey,
               npub,
               numFollows,
-              id,
-              oO: JSON.stringify(oO)
+              id
             }
           }
         }
