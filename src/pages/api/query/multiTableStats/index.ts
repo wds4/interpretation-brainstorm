@@ -82,15 +82,18 @@ export default async function handler(
             blockTasks: {
               step1_nostrListener: {
                 awaiting: res5.rowCount,
-                alreadyListened: res4.rowCount
+                alreadyListened: res4.rowCount,
+                url: 'https://interpretation-brainstorm.vercel.app/api/nostr/listeners/blockOfUsers?n=5'
               },
               step2_insertFollowsAndMutesIntoUsersTable: {
                 awaiting: res2b.rowCount,
-                alreadyDone: res6.rowCount
+                alreadyDone: res6.rowCount,
+                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=10'
               },
               step3_createObserverObject: {
                 awaiting: res9.rowCount,
-                alreadyDone: res10.rowCount
+                alreadyDone: res10.rowCount,
+                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?pubkey=n=10'
               }
             },
             mydata: {

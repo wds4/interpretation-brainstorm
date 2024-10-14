@@ -11,6 +11,24 @@
         }
     ],
     "functions": {
+        "pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.ts": {
+            "maxDuration": 180
+        },
+        "src/pages/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable/*.ts": {
+            "maxDuration": 180
+        },
+        "pages/api/nostr/listeners/blockOfUsers/*.ts": {
+            "maxDuration": 180
+        },
+        "src/pages/api/nostr/listeners/blockOfUsers/*.ts": {
+            "maxDuration": 180
+        },
+        "pages/api/manageData/blockOfUsers/createObserverObject/*.ts": {
+            "maxDuration": 180
+        },
+        "src/pages/api/manageData/blockOfUsers/createObserverObject/*.ts": {
+            "maxDuration": 180
+        },
         "pages/api/requestInterpretation/*.ts": {
             "maxDuration": 180
         },
