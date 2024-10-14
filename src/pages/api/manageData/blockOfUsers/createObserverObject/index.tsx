@@ -4,9 +4,9 @@ import { ObserverObjectV0Compact } from '@/typesUpdated';
 
 /*
 usage:
-http://localhost:3000/api/manageData/blockOfUsers/createObserverObject?n=10
+http://localhost:3000/api/manageData/blockOfUsers/createObserverObject?n=500
 
-https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=10
+https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=500
 
 This endpoint searches for follows and mutes from a block of pubkeys
 and enters them into the intepretation engine database. 
@@ -28,7 +28,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const searchParams = req.query
-  let numUsers = 10 // the default number of users to update
+  let numUsers = 500 // the default number of users to update
   if (searchParams.n) {
     numUsers = Number(searchParams.n)
   }

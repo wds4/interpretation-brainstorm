@@ -23,6 +23,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
   const searchParams = req.query
   let numUsers = 10 // the default number of users to update
   if (searchParams.n) {
@@ -30,8 +31,16 @@ export default async function handler(
   }
   const startTimestamp = Date.now()
   const client = await db.connect();
-  const currentTimestamp = Math.floor(Date.now() / 1000)
+  
   try {
+    const resCurrent = await client.sql`SELECT pubkey FROM users`
+    const knownPubkeys = []
+    if (resCurrent.rowCount) {
+      for (let u=0; u < resCurrent.rowCount; u++) {
+        const nextPk = resCurrent.rows[u].pubkey
+        knownPubkeys.push(nextPk)
+      }
+    }
     const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput = false AND (JSONB_ARRAY_LENGTH(follows) > 0 OR JSONB_ARRAY_LENGTH(mutes) > 0) ORDER BY whenlastinputfollowsandmutesattempt ASC LIMIT ${numUsers};`;
     if (res1.rowCount) {
         for (let u=0; u < res1.rowCount; u++) {
@@ -39,12 +48,18 @@ export default async function handler(
             const aFollows = res1.rows[u].follows;
             for (let x=0; x < aFollows.length; x++) {
                 const pk = aFollows[x];
-                await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+                if (!knownPubkeys.includes(pk)) {
+                  await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+                  knownPubkeys.push(pk)
+                }
             }
             const aMutes = res1.rows[u].mutes;
             for (let x=0; x < aMutes.length; x++) {
                 const pk = aMutes[x];
-                await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+                if (!knownPubkeys.includes(pk)) {
+                  await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+                  knownPubkeys.push(pk)
+                }
             }
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${parentPubkey}`;
         }

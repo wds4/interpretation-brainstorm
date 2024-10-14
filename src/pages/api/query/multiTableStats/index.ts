@@ -84,7 +84,7 @@ export default async function handler(
                 awaiting: res5.rowCount,
                 alreadyListened: res4.rowCount,
                 url: 'https://interpretation-brainstorm.vercel.app/api/nostr/listeners/blockOfUsers?n=5',
-                comments: 'medium-slow'
+                comments: 'sometimes fast, sometimes slow'
               },
               step2_insertFollowsAndMutesIntoUsersTable: {
                 awaiting: res2b.rowCount,
@@ -95,7 +95,7 @@ export default async function handler(
               step3_createObserverObject: {
                 awaiting: res9.rowCount,
                 alreadyDone: res10.rowCount,
-                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=10',
+                url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/createObserverObject?n=500',
                 comments: 'super fast'
               }
             },
