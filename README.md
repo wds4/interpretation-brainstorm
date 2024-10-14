@@ -56,7 +56,7 @@ updated:
             "path": "/api/nostr/listeners/blockOfUsers?n=900",
             "schedule": "*/2 * * * *"
         }
-    ],
+    ]
 ```
 
 ## json-schema

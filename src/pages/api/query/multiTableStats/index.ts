@@ -50,7 +50,7 @@ export default async function handler(
         const res7 = await client.sql`SELECT id FROM users WHERE followsCreatedAt > 0`;
         const res8 = await client.sql`SELECT id FROM users WHERE mutesCreatedAt > 0`;
         const res9 = await client.sql`SELECT id FROM users WHERE haveFollowsAndMutesBeenInput = true AND whenlastcreatedobserverobject = 0`;
-        const res10 = await client.sql`SELECT id FROM users WHERE whenlastcreatedobserverobject > 0`;
+        const res10 = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenlastcreatedobserverobject > 0`;
 
         console.log('====== res1Me: ' + resultMeUsers.rowCount)
         console.log('====== res1: ' + res1.rowCount)
@@ -63,6 +63,20 @@ export default async function handler(
         console.log('====== res6b: ' + res6b.rowCount)
         console.log('====== res7: ' + res7.rowCount)
         console.log('====== res8: ' + res8.rowCount)
+
+        const observerObjectExamples:{[key:number]: object} = {}
+        if (res10.rowCount && res10.rowCount > 5) {
+          for (let x=0; x < 3; x++) {
+            const oO = res10.rows[x].observerobject;
+            const pubkey = res10.rows[x].pubkey;
+            const id = res10.rows[x].id;
+            observerObjectExamples[id] = {
+              pubkey,
+              id,
+              oO: JSON.stringify(oO)
+            }
+          }
+        }
     
         const response: ResponseData = {
           success: true,
@@ -99,6 +113,10 @@ export default async function handler(
                 comments: 'super fast'
               }
             },
+            observerObjects: {
+              numUsersWithObserverObject: res10.rowCount,
+              observerObjectExamples
+            },
             mydata: {
               customers: {
                 id: resultMeCustomers.rows[0].id,
@@ -131,5 +149,11 @@ export default async function handler(
       res.status(500).json(response)
     }
   }
-
 } 
+
+        /*
+
+                      [res10.rows[0].pubkey]: JSON.stringify(res10.rows[0].observerobject)
+
+
+        */
