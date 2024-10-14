@@ -32,7 +32,7 @@ export default async function handler(
   const client = await db.connect();
   const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
-    const res1 = await client.sql`SELECT * FROM users WHERE (JSONB_ARRAY_LENGTH(follows) > 0 OR JSONB_ARRAY_LENGTH(mutes) > 0) ORDER BY whenlastinputfollowsandmutesattempt ASC LIMIT ${numUsers};`;
+    const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput = false AND (JSONB_ARRAY_LENGTH(follows) > 0 OR JSONB_ARRAY_LENGTH(mutes) > 0) ORDER BY whenlastinputfollowsandmutesattempt ASC LIMIT ${numUsers};`;
     if (res1.rowCount) {
         for (let u=0; u < res1.rowCount; u++) {
             const parentPubkey = res1.rows[u].pubkey

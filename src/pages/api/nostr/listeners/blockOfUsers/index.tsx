@@ -83,11 +83,18 @@ export default async function handler(
     // console.log('inputFollowsIntoDbNextUserBlock, number of eligible users: ' + res1.rowCount)
     if (res1.rowCount) {
       const authors = []
+      const followsCreatedAtLookup:{[key:string]: number} = {}
+      const mutesCreatedAtLookup:{[key:string]: number} = {}
       for (let x=0; x < res1.rowCount; x++) {
         const pk = res1.rows[x].pubkey
+        const followsCreatedAt = res1.rows[x].followscreatedat
+        const mutesCreatedAt = res1.rows[x].mutescreatedat
+        followsCreatedAtLookup[pk] = followsCreatedAt
+        mutesCreatedAtLookup[pk] = mutesCreatedAt
+
         // console.log('process next pk: ' + pk)
         authors.push(pk)
-        await client.sql`UPDATE users SET whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pk}`;
+        await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, whenLastQueriedFollowsAndMutes=${currentTimestamp} WHERE pubkey=${pk}`;
         // console.log(foo)
       }  
       await ndk.connect()
@@ -96,21 +103,19 @@ export default async function handler(
       let numFollowUpdates = 0
       let numMuteUpdates = 0
       sub1.on('event', async (event) => {
-        if (event.kind == 3) {
-          numFollowUpdates++
-          // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
-          const sFollows:string = returnFollows(event)
-          await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-          // console.log('sql result_update_follows for pubkey: ' + event.pubkey)
-          // console.log(result_update_follows)
+        if (event.kind == 3) {  
+          if (event.created_at && (event.created_at > followsCreatedAtLookup[event.pubkey])) {
+            numFollowUpdates++
+            const sFollows:string = returnFollows(event)
+            await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+          }
         }
         if (event.kind == 10000) {
-          numMuteUpdates++
-          // TODO: if previously stored, verify that event.created_at is more recent than what is in current storage
-          const sMutes:string = returnMutes(event)
-          await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
-          // console.log('sql result_update_mutes for pubkey: ' + event.pubkey)
-          // console.log(result_update_mutes)
+          if (event.created_at && (event.created_at > mutesCreatedAtLookup[event.pubkey])) {
+            numMuteUpdates++
+            const sMutes:string = returnMutes(event)
+            await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+          }
         }
       })
       sub1.on('eose', async () => {
