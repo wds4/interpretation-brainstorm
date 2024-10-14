@@ -55,23 +55,18 @@ export default async function handler(
           }
         }
         if (res1.rowCount == 1) {
-          const idParent = res1.rows[0].id
+          const userIdParent = res1.rows[0].id
+          observerObject[userIdParent] = {}
           // we process mutes first
           const aMutes = res1.rows[0].mutes;
           for (let x=0; x < aMutes.length; x++) {
-            const pk = aMutes[x];
-            let identifier = pk
-            if (idLookup[pk]) {
-              identifier = idLookup[pk]
+            const pk_ratee = aMutes[x];
+            let identifier_ratee = pk_ratee
+            if (idLookup[pk_ratee]) {
+              identifier_ratee = idLookup[pk_ratee]
             }
-            if (identifier != idParent) { // NO SELF RATING
-              if (!observerObject[idParent]) {
-                observerObject[idParent] = {
-                  identifier: 'm'
-                }
-              } else {
-                observerObject[idParent][identifier] = 'm'
-              }
+            if (identifier_ratee != userIdParent) { // NO SELF RATING
+              observerObject[userIdParent][identifier_ratee] = 'm'
             }
           }
           // we process follows after mutes
@@ -80,19 +75,13 @@ export default async function handler(
           // THE MUTE GETS IGNORED BC IT IS OVERWRITTEN IN THIS STEP
           const aFollows = res1.rows[0].follows;
           for (let x=0; x < aFollows.length; x++) {
-            const pk = aFollows[x];
-            let identifier = pk
-            if (idLookup[pk]) {
-              identifier = idLookup[pk]
+            const pk_ratee = aFollows[x];
+            let identifier_ratee = pk_ratee
+            if (idLookup[pk_ratee]) {
+              identifier_ratee = idLookup[pk_ratee]
             }
-            if (identifier != idParent) {
-              if (!observerObject[idParent]) {
-                observerObject[idParent] = {
-                  identifier: 'f'
-                }
-              } else {
-                observerObject[idParent][identifier] = 'f'
-              }
+            if (identifier_ratee != userIdParent) {
+              observerObject[userIdParent][identifier_ratee] = 'f'
             }
           }
           const sObserverObject = JSON.stringify(observerObject)

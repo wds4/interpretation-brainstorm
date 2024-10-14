@@ -44,8 +44,7 @@ const returnFollows = (event: NDKEvent) => {
       }
     }
   }
-  const sFollows = JSON.stringify(aFollows)
-  return sFollows
+  return aFollows
 }
 
 const returnMutes = (event: NDKEvent) => {
@@ -62,8 +61,7 @@ const returnMutes = (event: NDKEvent) => {
       }
     }
   }
-  const sMutes = JSON.stringify(aMutes)
-  return sMutes
+  return aMutes
 }
  
 export default async function handler(
@@ -106,14 +104,17 @@ export default async function handler(
         if (event.kind == 3) {  
           if (event.created_at && (event.created_at > followsCreatedAtLookup[event.pubkey])) {
             numFollowUpdates++
-            const sFollows:string = returnFollows(event)
+            const aFollows:string[] = returnFollows(event)
+            const sFollows = JSON.stringify(aFollows)
+            console.log(`================= pubkey: ${event.pubkey} has ${aFollows.length} follows`)
             await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
           }
         }
         if (event.kind == 10000) {
           if (event.created_at && (event.created_at > mutesCreatedAtLookup[event.pubkey])) {
             numMuteUpdates++
-            const sMutes:string = returnMutes(event)
+            const aMutes:string[] = returnMutes(event)
+            const sMutes = JSON.stringify(aMutes)
             await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
           }
         }

@@ -71,16 +71,16 @@ export default async function handler(
       console.log('============ connecting the db client now')
       const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
-        const res0 = await client.sql`SELECT id, pubkey, observerobject FROM users;`; // add more restrictions to limit number of returns
+        const res0 = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenLastCreatedObserverObject > 0;`; // add more restrictions to limit number of returns
         const resReferenceUser_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkeyParent};`;
         const resReferenceUser_customer = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkeyParent};`;
-        console.log(typeof res0)
+        console.log('number of users with observerObjects:' + res0.rowCount)
         console.log(typeof resReferenceUser_user)
         if (res0.rowCount == 1) {
-          // exit with error message
+          // ? exit with error message
         }
         if (resReferenceUser_user.rowCount != 1) {
-          // exit with error message
+          // ? exit with error message
         }
         const refUserID = resReferenceUser_user.rows[0].id
         const refCustomerID = resReferenceUser_customer.rows[0].id
@@ -102,7 +102,9 @@ export default async function handler(
             for (let x=0; x< res0.rowCount; x++) {
                 const id = res0.rows[x].id
                 const oO = res0.rows[x].observerobject
-                // console.log('x: ' + x + '; id: ' + id + '; oO: ' + JSON.stringify(oO, null, 4))
+                const numFoo = Object.keys(oO).length
+                console.log('+++++++++++++++++++++++++++')
+                console.log('x: ' + x + '; id: ' + id + '; numFoo: ' + numFoo)
                 if (!oO[id]) {
                   lookupFollowsById[id] = []
                   lookupDoSById[id] = 999
