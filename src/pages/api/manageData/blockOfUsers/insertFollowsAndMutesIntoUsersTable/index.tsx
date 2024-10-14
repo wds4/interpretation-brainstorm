@@ -5,7 +5,7 @@ import { db } from "@vercel/postgres";
 usage:
 http://localhost:3000/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=10
 
-https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?pubkey=n=10
+https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=10
 
 This endpoint searches for follows and mutes from a block of pubkeys
 and enters them into the intepretation engine database. 
@@ -32,7 +32,7 @@ export default async function handler(
   const client = await db.connect();
   const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
-    const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput=false ORDER BY whenlastinputfollowsandmutesattempt ASC LIMIT ${numUsers};`;
+    const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput=false AND whenlastqueriedfollowsandmutes > 0 ORDER BY whenlastinputfollowsandmutesattempt ASC LIMIT ${numUsers};`;
     if (res1.rowCount) {
         for (let u=0; u < res1.rowCount; u++) {
             const parentPubkey = res1.rows[u].pubkey
