@@ -37,7 +37,7 @@ export default async function handler(
   const currentTimestamp = Math.floor(Date.now() / 1000)
   try {
       const res0 = await client.sql`SELECT id, pubkey FROM users;`;
-      const res1 = await client.sql`SELECT * FROM users WHERE havefollowsandmutesbeeninput=true ORDER BY whenlastcreatedobserverobject ASC LIMIT ${numUsers};`;
+      const res1 = await client.sql`SELECT * FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0 ORDER BY whenlastcreatedobserverobject ASC LIMIT ${numUsers};`;
       const idLookup:IdLookup = {}
       if (res0.rowCount) {
         for (let x=0; x < res0.rowCount; x++) {

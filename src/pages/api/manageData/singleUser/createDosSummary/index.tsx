@@ -96,6 +96,7 @@ export default async function handler(
         if (resUsers.rowCount) {
             for (let x=0; x< resUsers.rowCount; x++) {
                 const id = resUsers.rows[x].id
+                const pk = resUsers.rows[x].pubkey
                 lookupDoSById[id] = 999
                 const oO = resUsers.rows[x].observerobject
                 lookupFollowsById[id] = []
@@ -108,12 +109,10 @@ export default async function handler(
                         }
                     }
                     lookupFollowsById[id] = aFollows
+                    console.log(`for id: ${id}, pubkey: ${pk}, we have these follows: ${JSON.stringify(aFollows)}`)
                 }
             }
         }
-        console.log('++++++++++++++++')
-        console.log(`lookupDoSById.length: ${Object.keys(lookupDoSById).length}`)
-        console.log(`resUsers.rowCount: ${resUsers.rowCount}`)
         for (let u=0; u < aSeedIds.length; u++) {
           lookupDoSById[u] = 0
         }
