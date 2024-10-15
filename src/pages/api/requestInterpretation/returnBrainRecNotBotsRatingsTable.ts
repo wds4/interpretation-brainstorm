@@ -28,7 +28,25 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         
         const pubkey1 = aSeedPubkeys[0]
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
-        console.log(typeof resultMeDosSummaries)
+        if (resultMeDosSummaries.rowCount) {
+          const oLookupIdsByDos = resultMeDosSummaries.rows[0].lookupidsbydos
+          console.log(`dos0 number of users: ${oLookupIdsByDos[0].length} `)
+          console.log(`dos1 number of users: ${oLookupIdsByDos[1].length} `)
+        }
+        /*
+        // const resultUsersWithObserverObjects = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenlastcreatedobserverobject > 0`;
+        // TODO: 
+        1. iterate through oLookupIdsByDos[0], [1], ... (until length is zero)
+        2. for each user, fetch observerObject 
+        3. incorporate observerObject into oRatingsTable
+        Keep users represented as userID, not as pubkey.
+        */
+
+
+
+
+
+
 
         const message = 'Results of your nostr/requestInterpretation query:'
         const response:ResponseData = {

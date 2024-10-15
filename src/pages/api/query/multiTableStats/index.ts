@@ -122,7 +122,7 @@ export default async function handler(
                 awaiting: res2b.rowCount,
                 alreadyDone: res6.rowCount,
                 url: 'https://interpretation-brainstorm.vercel.app/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=10',
-                comments: 'super slow; need to batch INSERT commands; limit to 10 initially; gets much faster once saturation occurs'
+                comments: 'super slow; need to batch INSERT commands; limit to 10 initially; then up to 500 once saturation occurs'
               },
               step3_createObserverObject: {
                 awaiting: res9.rowCount,
