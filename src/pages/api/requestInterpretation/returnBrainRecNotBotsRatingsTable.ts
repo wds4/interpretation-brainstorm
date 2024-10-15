@@ -55,6 +55,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
 
         // ******************************************************
         // smaller ratings table for testing purposes
+        /*
         let oRatingsTableTruncated:RatingsV0o = { [context]: {}}
         const resultSeed_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         let userId_seedUser = 0;
@@ -65,6 +66,8 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
           oObserverObject_seedUser = resultSeed_user.rows[0].observerobject
         }
         oRatingsTableTruncated = addObserverObjectToRatingsTable(oRatingsTableTruncated,oObserverObject_seedUser,userId_seedUser,context,f_replace_string,m_replace_string)
+        console.log(typeof oRatingsTableTruncated)
+        */
         // ******************************************************
 
 
