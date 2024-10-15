@@ -4,18 +4,12 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
-http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+http://localhost:3000/api/manageData/singleUser/createDosSummary2?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 TODO: option to support npub in addition to pubkey
 */
-
-type ResponseData = {
-  success: boolean,
-  message: string,
-  dosSummary?: object
-}
 
 type Obj = number[]
 type Obj1 = {
@@ -25,17 +19,26 @@ type Obj1 = {
   [key: number]: number,
 }
 
+type ResponseData = {
+  success: boolean,
+  message: string,
+  dosSummary?: object
+}
+
 const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,lookupDoSById:Obj2) => {
-  const nextMinimumDos = dos + 1
-  const aLastDosIds = lookupIdsByDos[dos]
+  console.log(`returnNextDosIds A`)
   const aNextDosIds:number[] = []
+  const nextMinimumDos:number = dos + 1
+  const aLastDosIds = lookupIdsByDos[dos]
+  // console.log(`returnNextDosIds B`)
   for (let p=0; p < aLastDosIds.length; p++) {
+    // console.log(`returnNextDosIds C; p: ${p}`)
     const id_parent = aLastDosIds[p]
+    // console.log(`returnNextDosIds D; p: ${p}; id_parent: ${id_parent}`)
     let aFollows:number[] = []
     if (lookupFollowsById[id_parent]) {
       aFollows = lookupFollowsById[id_parent]
     }
-    
     for (let c=0; c < aFollows.length; c++) {
       const id_child = aFollows[c]
       const currentlyRecordedDos = lookupDoSById[id_child] || 999
@@ -72,17 +75,10 @@ export default async function handler(
       console.log('============ connecting the db client now')
       const currentTimestamp = Math.floor(Date.now() / 1000)
       try {
-        const resUsers = await client.sql`SELECT id, pubkey, observerobject FROM users;`;
-        const resUsersWithOo = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenLastCreatedObserverObject > 0;`;
+        const resUsersWithOo = await client.sql`SELECT id, observerobject FROM users WHERE whenLastCreatedObserverObject > 0;`;
         const resReferenceUser_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkeyParent};`;
         const resReferenceUser_customer = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkeyParent};`;
         console.log('number of users with observerObjects:' + resUsersWithOo.rowCount)
-        if (resUsersWithOo.rowCount == 1) {
-          // ? exit with error message
-        }
-        if (resReferenceUser_user.rowCount != 1) {
-          // ? exit with error message
-        }
         const refUserID = resReferenceUser_user.rows[0].id
         const refCustomerID = resReferenceUser_customer.rows[0].id
         const aSeedIds = [refUserID]
@@ -96,47 +92,40 @@ export default async function handler(
         lookupIdsByDos[4] = []
         lookupIdsByDos[5] = []
         lookupIdsByDos[6] = []
+        lookupIdsByDos[7] = []
+        lookupIdsByDos[8] = []
+        lookupIdsByDos[9] = []
+        lookupIdsByDos[10] = []
         lookupIdsByDos[999] = []
-        if (resUsers.rowCount) {
-            for (let x=0; x< resUsers.rowCount; x++) {
-                const id = resUsers.rows[x].id
-                const pk = resUsers.rows[x].pubkey
-                lookupDoSById[id] = 999
-                const oO = resUsers.rows[x].observerobject
-                lookupFollowsById[id] = []
-                if (oO[id]) {
-                    const aFollowsAndMutes = Object.keys(oO[id])
-                    const aFollows = []
-                    for (let z=0;z<aFollowsAndMutes.length;z++) {
-                        if (oO[id][z] == 'f') {
-                            aFollows.push(z)
-                        }
-                    }
-                    lookupFollowsById[id] = aFollows
-                    console.log(`for id: ${id}, pubkey: ${pk}, we have these follows: ${JSON.stringify(aFollows)}`)
+        console.log(`lookupIdsByDos: ${JSON.stringify(lookupIdsByDos, null, 4)}`)
+        if (resUsersWithOo.rowCount) {
+          for (let x=0; x< resUsersWithOo.rowCount; x++) {
+            const id = resUsersWithOo.rows[x].id
+            const oO = resUsersWithOo.rows[x].observerobject
+            lookupDoSById[id] = 999
+            lookupFollowsById[id] = []
+            if (oO[id]) {
+              const aRatees = Object.keys(oO[id])
+              for (let r=0; r < aRatees.length; r++) {
+                const id_ratee = Number(aRatees[r])
+                if (oO[id][id_ratee] == 'f') {
+                  lookupFollowsById[id].push(id_ratee)
                 }
+              }
             }
+          }
         }
+        console.log(`lookupFollowsById length: ${Object.keys(lookupFollowsById).length}`)
         for (let u=0; u < aSeedIds.length; u++) {
           lookupDoSById[u] = 0
         }
 
-        // calculate DoS
-        for (let d=0; d < 7; d++) {
-            lookupIdsByDos[d+1] = returnNextDosIds(d,lookupIdsByDos,lookupFollowsById,lookupDoSById)
+        for (let d=0; d < 10; d++) {
+          lookupIdsByDos[d+1] = returnNextDosIds(d,lookupIdsByDos,lookupFollowsById,lookupDoSById)
+          console.log(`d: ${d}; length of lookupIdsByDos[d+1]: ${lookupIdsByDos[d+1].length} `)
         }
 
-        // TODO: calculate lookupIdsByDos[999]
-        Object.keys(lookupDoSById).forEach((key) => {
-          const k:number = Number(key)
-          if (lookupDoSById[k] && lookupDoSById[k] == 999) {
-            lookupIdsByDos[999].push(k)
-          }
-        })
-
-        // save dosSummary in table: dosSummaries
         const oDosSummary = {
-          numUsersInDb: resUsers.rowCount,
           numUsersWithKnownObserverObject: resUsersWithOo.rowCount,
           dos0: lookupIdsByDos[0].length,
           dos1: lookupIdsByDos[1].length,
@@ -145,11 +134,16 @@ export default async function handler(
           dos4: lookupIdsByDos[4].length,
           dos5: lookupIdsByDos[5].length,
           dos6: lookupIdsByDos[6].length,
+          dos7: lookupIdsByDos[7].length,
+          dos8: lookupIdsByDos[8].length,
+          dos9: lookupIdsByDos[9].length,
+          dos10: lookupIdsByDos[10].length,
           dosOver6: lookupIdsByDos[999].length
         }
         const sDosSummary = JSON.stringify(oDosSummary)
         await client.sql`INSERT INTO dosSummaries (pubkey, userid, customerid) VALUES(${pubkeyParent}, ${refUserID}, ${refCustomerID}) ON CONFLICT DO NOTHING;`;
         await client.sql`UPDATE dosSummaries SET dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
+ 
         const response:ResponseData = {
           success: true,
           message: 'api/manageData/singleUser/createDosSummary: made it to the end of the try block',
