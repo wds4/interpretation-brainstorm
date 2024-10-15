@@ -147,7 +147,7 @@ export default async function handler(
         const sDosSummary = JSON.stringify(oDosSummary)
         const sLookupIdsByDos = JSON.stringify(lookupIdsByDos)
         await client.sql`INSERT INTO dosSummaries (pubkey, userid, customerid) VALUES(${pubkeyParent}, ${refUserID}, ${refCustomerID}) ON CONFLICT DO NOTHING;`;
-        await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos} dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
+        await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos}, dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
  
         const response:ResponseData = {
           success: true,
