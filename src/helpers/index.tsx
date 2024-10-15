@@ -1,4 +1,4 @@
-type Foo = {[key: string | number]: string | number | Object }[]
+type Foo = {[key: string | number]: string | number | object }[]
 
 export const arrayToObject = (array:Foo, keyField:string) => 
   Object.fromEntries(array.map(item => [item[keyField], item]));

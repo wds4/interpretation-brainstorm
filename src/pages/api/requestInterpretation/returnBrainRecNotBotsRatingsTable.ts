@@ -27,7 +27,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
     const defaultFollowsConfidence = parameters.follows.confidence
     const defaultMutesScore = parameters.mutes.score
     const defaultMutesConfidence = parameters.mutes.confidence
-    const depth = parameters.depth
+    // const depth = parameters.depth
 
     const f_replace_object = { score: defaultFollowsScore, confidence: defaultFollowsConfidence }
     const f_replace_string = JSON.stringify(f_replace_object)
@@ -47,10 +47,11 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         let oRatingsTable:RatingsV0o = { [context]: {}}
 
         const pubkey1 = aSeedPubkeys[0]
-        const resultSeed_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         const resultSeed_dosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
         const resUsersWithObserverObject = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenlastcreatedobserverobject > 0`;
 
+        /*
+        const resultSeed_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         let userId_seedUser = 0;
 
         let oObserverObject_seedUser:RaterObjectV0o = {}
@@ -58,8 +59,8 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
           userId_seedUser = resultSeed_user.rows[0].id
           oObserverObject_seedUser = resultSeed_user.rows[0].observerobject
         }
-
-        // oRatingsTable = addObserverObjectToRatingsTable(oRatingsTable,oObserverObject_seedUser,userId_seedUser,context,f_replace_string,m_replace_string)
+        oRatingsTable = addObserverObjectToRatingsTable(oRatingsTable,oObserverObject_seedUser,userId_seedUser,context,f_replace_string,m_replace_string)
+        */
         
         // console.log(`resUsersWithObserverObject.rows: ` + JSON.stringify(resUsersWithObserverObject.rows))
         const observerObjectDataById = arrayToObject(resUsersWithObserverObject.rows, 'id')
