@@ -4,7 +4,7 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
-http://localhost:3000/api/manageData/singleUser/createDosSummary2?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
@@ -125,8 +125,12 @@ export default async function handler(
           console.log(`d: ${d}; length of lookupIdsByDos[d+1]: ${lookupIdsByDos[d+1].length} `)
         }
 
+        const lookupIdsByDosNumerOfChars = JSON.stringify(lookupIdsByDos).length
+        const lookupIdsByDosMegabyteSize = lookupIdsByDosNumerOfChars / 1048576
+
         const oDosSummary = {
           numUsersWithKnownObserverObject: resUsersWithOo.rowCount,
+          fullReportSizeInMegabytes: lookupIdsByDosMegabyteSize,
           dos0: lookupIdsByDos[0].length,
           dos1: lookupIdsByDos[1].length,
           dos2: lookupIdsByDos[2].length,
@@ -138,11 +142,12 @@ export default async function handler(
           dos8: lookupIdsByDos[8].length,
           dos9: lookupIdsByDos[9].length,
           dos10: lookupIdsByDos[10].length,
-          dosOver6: lookupIdsByDos[999].length
+          dosOver10: lookupIdsByDos[999].length
         }
         const sDosSummary = JSON.stringify(oDosSummary)
+        const sLookupIdsByDos = JSON.stringify(lookupIdsByDos)
         await client.sql`INSERT INTO dosSummaries (pubkey, userid, customerid) VALUES(${pubkeyParent}, ${refUserID}, ${refCustomerID}) ON CONFLICT DO NOTHING;`;
-        await client.sql`UPDATE dosSummaries SET dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
+        await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos} dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
  
         const response:ResponseData = {
           success: true,

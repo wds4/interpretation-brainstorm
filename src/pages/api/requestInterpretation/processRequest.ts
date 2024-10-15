@@ -1,5 +1,5 @@
 import { InterpProtocolParams_follows, InterpProtocolParams_followsAndMutes, InterpProtocolParams_mutes, RatingsTableObject } from "@/types";
-import returnBrainRecNotBotsRatingsTable from "./returnBrainRecNotBotsRatingsTable";
+import returnBrainRecNotBotsRatingsTable from "./returnBrainRecNotBotsRatingsTable"
 import returnFollowsOnlyRatingsTable from "./returnFollowsOnlyRatingsTable";
 import returnMutesOnlyRatingsTable from "./returnMutesOnlyRatingsTable";
 import Ajv from "ajv"
