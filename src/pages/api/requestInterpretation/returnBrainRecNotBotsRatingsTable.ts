@@ -2,28 +2,17 @@ import { InterpProtocolParams_followsAndMutes, RatingsTableObject } from "@/type
 import { db } from "@vercel/postgres";
 import { ResponseData } from "./processRequest";
 
-type Obj = Array<string>
-type Obj1 = {
-  [key: string]: Obj,
-}
- type Obj2 = {
-  [key: string]: number,
-}
-
-// const oRatingsTable:RatingsTableObject = { 'notSpam': {}}
-
 const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParams_followsAndMutes) => {
     console.log(`parameters: ${JSON.stringify(parameters, null, 4)}`)
+    const aSeedPubkeys:string[] = parameters.pubkeys
+    const context = parameters.context
+    /*
     const defaultFollowsScore = parameters.follows.score
     const defaultFollowsConfidence = parameters.follows.confidence
     const defaultMutesScore = parameters.mutes.score
     const defaultMutesConfidence = parameters.mutes.confidence
-    const aSeedPubkeys:string[] = parameters.pubkeys
-    const context = parameters.context
     const depth = parameters.depth
-
-
-
+    */
     const oRatingsTable:RatingsTableObject = { [context]: {}}
 
     console.log('============ connecting to the db client now')
@@ -34,11 +23,12 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         ********** CURRENTLY ASSUMES ONLY ONE SEED USER **********
         
         // TODO: process if there are multiple seedPubkeys
-        
+
         */
         
         const pubkey1 = aSeedPubkeys[0]
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
+        console.log(typeof resultMeDosSummaries)
 
         const message = 'Results of your nostr/requestInterpretation query:'
         const response:ResponseData = {
