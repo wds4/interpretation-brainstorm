@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import { npubEncode, verifyPubkeyValidity } from '@/helpers/nip19';
+import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
