@@ -92,6 +92,7 @@ export const exampleRatingsV0o:RatingsV0o = {
         alice: {
             bob: { score: 1.0, confidence: 0.05},
             charlie: { score: 1.0, confidence: 0.05},
+            4: { score: 1.0, confidence: 0.05},
             zed: { score: 0.0, confidence: 0.1},
         },
         bob: {
@@ -100,7 +101,11 @@ export const exampleRatingsV0o:RatingsV0o = {
         },
         zed: {
             zed: { score: 1.0, confidence: 0.05},
-        }
+        },
+        4: {
+            3: { score: 1.0, confidence: 0.05},
+            5: { score: 0.0, confidence: 0.1},
+        },
     }
 }
 
@@ -314,6 +319,11 @@ export type ScorecardsWithMetaDataV3 = {
 export type RatingsWithMetaData = {
     metaData: RatingsMetaData
     data: Ratings
+}
+
+export type RatingsWithMetaDataV0o = {
+    metaData: RatingsMetaData
+    data: RatingsV0o
 }
 
 // GrapeRank protocol parameters

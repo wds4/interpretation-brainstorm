@@ -2,7 +2,7 @@ import { InterpProtocolParams_followsAndMutes } from "@/types"
 import { db } from "@vercel/postgres";
 import { ResponseData } from "./processRequest";
 import { arrayToObject } from "@/helpers";
-import { rater, RaterObjectV0o, RatingsV0o } from "@/typesUpdated";
+import { rater, RaterObjectV0o, RatingsV0o, RatingsWithMetaDataV0o } from "@/typesUpdated";
 
 const addObserverObjectToRatingsTable = (oRatingsTable:RatingsV0o,oO:RaterObjectV0o,rater:rater,context:string,f_replace_string:string,m_replace_string:string) => {
   const sOO = JSON.stringify(oO)
@@ -50,7 +50,12 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         const resultSeed_dosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
         const resUsersWithObserverObject = await client.sql`SELECT id, pubkey, observerobject FROM users WHERE whenlastcreatedobserverobject > 0`;
 
-        /*
+
+
+
+        // ******************************************************
+        // smaller ratings table for testing purposes
+        let oRatingsTableTruncated:RatingsV0o = { [context]: {}}
         const resultSeed_user = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         let userId_seedUser = 0;
 
@@ -59,8 +64,11 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
           userId_seedUser = resultSeed_user.rows[0].id
           oObserverObject_seedUser = resultSeed_user.rows[0].observerobject
         }
-        oRatingsTable = addObserverObjectToRatingsTable(oRatingsTable,oObserverObject_seedUser,userId_seedUser,context,f_replace_string,m_replace_string)
-        */
+        oRatingsTableTruncated = addObserverObjectToRatingsTable(oRatingsTableTruncated,oObserverObject_seedUser,userId_seedUser,context,f_replace_string,m_replace_string)
+        // ******************************************************
+
+
+
         
         // console.log(`resUsersWithObserverObject.rows: ` + JSON.stringify(resUsersWithObserverObject.rows))
         const observerObjectDataById = arrayToObject(resUsersWithObserverObject.rows, 'id')
@@ -93,7 +101,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
             if (!aIds.length) {
               continueIterating = false
             }
-            if (dos == 12) {
+            if (dos == 1) {
               continueIterating = false
             }
             dos++
@@ -109,6 +117,21 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         Keep users represented as userID, not as pubkey.
         */
 
+        
+
+        const ratingsWithMetaData:RatingsWithMetaDataV0o = {
+          metaData: {
+            observer: pubkey1,
+            interpretationPrococolUID: "recommendedBrainstormNotBotsInterpretationProtocol"
+          },
+          // data: oRatingsTableTruncated
+          data: oRatingsTable
+        }
+        const sRatingsWithMetaData = JSON.stringify(ratingsWithMetaData)
+
+        const currentTimestamp = Math.floor(Date.now() / 1000)
+        await client.sql`UPDATE ratingsTables SET ratingswithmetadata=${sRatingsWithMetaData}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkey1}`;
+
         const ratingsTableChars = JSON.stringify(oRatingsTable).length
         const megabyteSize = ratingsTableChars / 1048576
         const message = 'Results of your nostr/requestInterpretation query:'
@@ -116,7 +139,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
             success: true,
             message,
             ratingsTableSizeInMegabytes: megabyteSize,
-            // ratingsTable: oRatingsTable
+            ratingsWithMetaData: ratingsWithMetaData
         }
 
         return response

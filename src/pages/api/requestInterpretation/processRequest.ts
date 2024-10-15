@@ -4,7 +4,7 @@ import returnFollowsOnlyRatingsTable from "./returnFollowsOnlyRatingsTable";
 import returnMutesOnlyRatingsTable from "./returnMutesOnlyRatingsTable";
 import Ajv from "ajv"
 import { schema_basicBrainstormFollowsOnlyInterpretationProtocol, schema_basicBrainstormMutesOnlyInterpretationProtocol, schema_recommendedBrainstormNotBotsInterpretationProtocol } from "@/jsonSchemas";
-import { RatingsV0o } from "@/typesUpdated";
+import { RatingsV0o, RatingsWithMetaDataV0o } from "@/typesUpdated";
 const ajv = new Ajv()
 
 const validate_basicBrainstormFollowsOnlyInterpretationProtocol = ajv.compile(schema_basicBrainstormFollowsOnlyInterpretationProtocol)
@@ -46,6 +46,7 @@ export type ResponseData = {
   success: boolean,
   message?: string,
   ratingsTableSizeInMegabytes?: number,
+  ratingsWithMetaData?: RatingsWithMetaDataV0o,
   validationErrors?: object,
   error?: object
   dosData?: object,
