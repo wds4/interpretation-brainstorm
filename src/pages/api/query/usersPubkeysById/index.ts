@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import { verifyPubkeyValidity } from '@/helpers/nip19';
+import { arrayToObject } from '@/helpers';
 
 /*
 usage:
@@ -26,6 +26,9 @@ export default async function handler(
   console.log('============ connecting the db client now')
   try {
     const resultUsers = await client.sql`SELECT id, pubkey FROM users`;
+
+    const observerObjectDataById = arrayToObject(resultUsers.rows, 'id')
+
     const resultUsersChars = JSON.stringify(resultUsers).length
     const megabyteSize = resultUsersChars / 1048576
 
@@ -33,7 +36,8 @@ export default async function handler(
       success: true,
       message: 'Results of your usersPubkeyById query:',
       data: {
-        megabyteSize
+        megabyteSize,
+        observerObjectDataById
       }
     }
     res.status(200).json(response)
