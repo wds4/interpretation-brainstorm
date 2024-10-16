@@ -62,15 +62,5 @@
         "src/pages/api/nostr/query/singleUser/ratingsTable/*.*": {
             "maxDuration": 180
         }
-    },
-    "crons": [
-        {
-            "path": "/api/manageData/blockOfUsers/insertFollowsAndMutesIntoUsersTable?n=500",
-            "schedule": "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
-        },
-        {
-            "path": "/api/nostr/listeners/blockOfUsers?n=900",
-            "schedule": "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
-        }
-    ]
+    }
 }
