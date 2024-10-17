@@ -38,6 +38,10 @@ export default async function handler(
         const resultMeUsers = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         const resultMeCustomers = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkey1}`;
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
+        const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='notSpam`;
+        const resultMeScorecardsTables = await client.sql`SELECT * FROM scorecardsTables WHERE pubkey=${pubkey1} AND name='notSpam` ;
+
+
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
         const res1 = await client.sql`SELECT id FROM users`;
         const res2 = await client.sql`SELECT id, follows FROM users WHERE JSONB_ARRAY_LENGTH(follows) != 0`;
@@ -95,7 +99,12 @@ export default async function handler(
             }
           }
         }
-    
+
+        const foo1NumChars = JSON.stringify(resultMeDosSummaries.rows[0].dosdata).length
+        const megabytes_myDosSummaries = foo1NumChars / 1048576
+        const foo2NumChars = JSON.stringify(resultMeUsers.rows[0].observerobject).length
+        const megabytes_myObserverObject = foo2NumChars / 1048576
+
         const response: ResponseData = {
           success: true,
           message: 'Results of your multiTables query:',
@@ -131,23 +140,39 @@ export default async function handler(
                 comments: 'super fast'
               }
             },
-            observerObjects: {
-              numUsersWithObserverObject: res10.rowCount,
-              observerObjectExamples
-            },
             mydata: {
-              customers: {
+              customers_table: {
                 id: resultMeCustomers.rows[0].id,
               },
-              dosSummaries: {
-                dosData: resultMeDosSummaries.rows[0].dosdata,
-              },
-              users: {
+              users_table: {
                 pubkey: pubkey1,
                 id: resultMeUsers.rows[0].id,
                 numFollows: resultMeUsers.rows[0].follows.length,
                 numMutes: resultMeUsers.rows[0].mutes.length,
-                observerObject: resultMeUsers.rows[0].observerobject
+                observerObject: {
+                  megabytes: megabytes_myObserverObject,
+                  numFollows: -1,
+                  numMutes: -1,
+                  whenlastcreatedobserverobject: resultMeUsers.rows[0].whenlastcreatedobserverobject,
+                }
+              },
+              dosSummaries_table: {
+                lastupdated: resultMeDosSummaries.rows[0].lastupdated,
+                dosData: {
+                  megabytes: megabytes_myDosSummaries
+                } 
+              },
+              ratingsTables_table: {
+                lastupdated: resultMeRatingsTables.rows[0].lastupdated,
+                ratingswithmetadata: {
+                  megabytes: -1
+                }
+              },
+              scorecardsTables_table: {
+                lastupdated: resultMeScorecardsTables.rows[0].lastupdated,
+                scorecardswithmetadata: {
+                  megabytes: -1
+                }
               }
             }
           }
