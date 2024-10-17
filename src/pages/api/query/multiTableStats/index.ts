@@ -155,6 +155,11 @@ export default async function handler(
         res.status(200).json(response)
       } catch (e) {
         console.log(e)
+        const response:ResponseData = {
+          success: false,
+          message: `api/query/multiTableStats error: ${error}`,
+        }
+        res.status(500).json(response)
       } finally {
         console.log('============ releasing the db client')
         client.release()

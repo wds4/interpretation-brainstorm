@@ -41,11 +41,15 @@ const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,
     }
     for (let c=0; c < aFollows.length; c++) {
       const id_child = aFollows[c]
+
       const currentlyRecordedDos = lookupDoSById[id_child] || 999
       if (nextMinimumDos < currentlyRecordedDos) {
         lookupDoSById[id_child] = nextMinimumDos
         if (!aNextDosIds.includes(id_child)) {
           aNextDosIds.push(id_child)
+          if (id_child == 1) {
+            console.log(`pushing ${id_child} into aNextDosIds; dos: ${dos}`)
+          }
         }
       }
     }
