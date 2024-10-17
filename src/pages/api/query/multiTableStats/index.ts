@@ -157,7 +157,7 @@ export default async function handler(
         console.log(e)
         const response:ResponseData = {
           success: false,
-          message: `api/query/multiTableStats error: ${error}`,
+          message: `api/query/multiTableStats error: ${e}`,
         }
         res.status(500).json(response)
       } finally {
