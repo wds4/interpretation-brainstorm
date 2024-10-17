@@ -68,6 +68,15 @@ updated:
     ]
 ```
 
+```
+    "crons": [
+        {
+            "path": "/api/manageData/blockOfUsers/createObserverObject?n=2000",
+            "schedule": "*/3 * * * *"
+        }
+    ]
+```
+
 ## json-schema
 
 ajv for schema validation
