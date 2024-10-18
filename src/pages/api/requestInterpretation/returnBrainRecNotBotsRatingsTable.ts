@@ -104,7 +104,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
             if (!aIds.length) {
               continueIterating = false
             }
-            if (dos == 1) {
+            if (dos > 15) {
               continueIterating = false
             }
             dos++
