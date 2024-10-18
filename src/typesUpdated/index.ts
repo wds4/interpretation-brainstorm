@@ -162,6 +162,7 @@ ScorecardsV0 "aScoreAndConfidence" --
 ScorecardsV1 "aScoreAndInput" -- alternate to V0
 ScorecardsV2 "aInfluenceScoreConfidenceInput" -- includes all 4 numbers which is better for running calculations but maybe bad for long term storage
 ScorecardsV3 "oExpandedScoreParameters" -- bigger footprint but easier to write code
+ScorecardsV4 "oInfluence" -- smallest footprint
 
 Comparisons:
 V0 versus V1: input is cleaner but confidence is easier to use (since influence = score * confidence)
