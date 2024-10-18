@@ -102,8 +102,16 @@ export default async function handler(
         }
 
         let meDosSummariesLastUpdated = '?';
+        const oNumUsersByDos:{[key:string|number]:number} = {}
         if (resultMeDosSummaries.rowCount) {
           meDosSummariesLastUpdated = secsToTimeAgo(resultMeDosSummaries.rows[0].lastupdated)
+          const oLookupIdsByDos = resultMeDosSummaries.rows[0].lookupidsbydos
+          const aDosToCheck = Object.keys(oLookupIdsByDos)
+          for (let z = 0; z < aDosToCheck.length; z++) {
+            const dosToCheck = aDosToCheck[z]
+            const aUserIds = oLookupIdsByDos[dosToCheck]
+            oNumUsersByDos[dosToCheck] = aUserIds.length
+          }
         }
 
         let meRatingsTablesLastUpdated = '?';
@@ -187,7 +195,8 @@ export default async function handler(
                 lastupdated: meDosSummariesLastUpdated,
                 dosData: {
                   megabytes: megabytes_myDosSummaries
-                } 
+                },
+                oNumUsersByDos
               },
               ratingsTables_table: {
                 lastupdated: meRatingsTablesLastUpdated,
