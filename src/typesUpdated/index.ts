@@ -89,6 +89,9 @@ export type RatingsV0o = {
 
 export const exampleRatingsV0o:RatingsV0o = {
     notSpam: {
+        1: {
+            alice: { score: 1.0, confidence: 0.05},
+        },
         alice: {
             bob: { score: 1.0, confidence: 0.05},
             charlie: { score: 1.0, confidence: 0.05},
