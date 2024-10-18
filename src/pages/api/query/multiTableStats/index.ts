@@ -119,7 +119,7 @@ export default async function handler(
         let megabytes_myScorecardsWithMetaData = 0
         if (resultMeScorecardsTables.rowCount) {
           meScorecardsTablesLastUpdated = secsToTimeAgo(resultMeScorecardsTables.rows[0].lastupdated)
-          const meScorecardsWithMetaData = resultMeScorecardsTables.rows[0].ratingswithmetadata
+          const meScorecardsWithMetaData = resultMeScorecardsTables.rows[0].scorecardswithmetadata
           const fooNumChars = JSON.stringify(meScorecardsWithMetaData).length
           megabytes_myScorecardsWithMetaData = fooNumChars / 1048576
         }
