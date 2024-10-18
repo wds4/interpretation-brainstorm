@@ -307,6 +307,8 @@ export type ScorecardsMetaData = {
 type RatingsMetaData = {
     observer: observer // the "owner" of the Ratings (i.e. the person who commissioned its creation?)
     interpretationPrococolUID?: string
+    compactFormat?: boolean
+    replacements?: object
 }
 
 export type ScorecardsWithMetaDataV3 = {

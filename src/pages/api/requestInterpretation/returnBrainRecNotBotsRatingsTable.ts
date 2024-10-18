@@ -5,19 +5,21 @@ import { arrayToObject } from "@/helpers";
 import { rater, RaterObjectV0o, RatingsV0o, RatingsWithMetaDataV0o } from "@/typesUpdated";
 
 const addObserverObjectToRatingsTable = (oRatingsTable:RatingsV0o,oO:RaterObjectV0o,rater:rater,context:string,f_replace_string:string,m_replace_string:string) => {
-  const sOO = JSON.stringify(oO)
+  // const sOO = JSON.stringify(oO)
   // console.log(`rater: ${rater}; sOO: ${sOO} `)
+  console.log(`f_replace_string: ${f_replace_string}, m_replace_string: ${m_replace_string}`)
 
-  const sOO_edited = sOO.replaceAll('\"f\"',f_replace_string).replaceAll('\"m\"',m_replace_string)
-  const oO_edited = JSON.parse(sOO_edited)
+  // const sOO_edited = sOO.replaceAll('\"f\"',f_replace_string).replaceAll('\"m\"',m_replace_string)
+  // const oO_edited = JSON.parse(sOO_edited)
 
   if (oO[rater]) {
-    oRatingsTable[context][rater] = oO_edited[rater]
-    // oRatingsTable[context][rater] = oO[rater]
+    // oRatingsTable[context][rater] = oO_edited[rater]
+    oRatingsTable[context][rater] = oO[rater]
   }
 
   return oRatingsTable
 }
+
 const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParams_followsAndMutes) => {
     console.log(`parameters: ${JSON.stringify(parameters, null, 4)}`)
     const aSeedPubkeys:string[] = parameters.pubkeys
@@ -125,7 +127,24 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         const ratingsWithMetaData:RatingsWithMetaDataV0o = {
           metaData: {
             observer: pubkey1,
-            interpretationPrococolUID: "recommendedBrainstormNotBotsInterpretationProtocol"
+            interpretationPrococolUID: "recommendedBrainstormNotBotsInterpretationProtocol",
+            compactFormat: true,
+            replacements: [
+              {
+                placeholder: 'f',
+                params: {
+                  score: defaultFollowsScore,
+                  confidence: defaultFollowsConfidence
+                }
+              },
+              {
+                placeholder: 'm',
+                params: {
+                  score: defaultMutesScore,
+                  confidence: defaultMutesConfidence
+                }
+              }
+            ]
           },
           // data: oRatingsTableTruncated
           data: oRatingsTable
