@@ -38,8 +38,8 @@ export default async function handler(
         const resultMeUsers = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         const resultMeCustomers = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkey1}`;
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
-        const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='notSpam`;
-        const resultMeScorecardsTables = await client.sql`SELECT * FROM scorecardsTables WHERE pubkey=${pubkey1} AND name='notSpam` ;
+        const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='notSpam'`;
+        const resultMeScorecardsTables = await client.sql`SELECT * FROM scorecardsTables WHERE pubkey=${pubkey1} AND name='notSpam'` ;
 
 
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
