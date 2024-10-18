@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
 import { npubEncode, verifyPubkeyValidity } from '@/helpers/nip19';
+import { secsToTimeAgo } from '@/helpers';
 
 /*
 usage:
@@ -39,7 +40,7 @@ export default async function handler(
         const resultMeUsers = await client.sql`SELECT * FROM users WHERE pubkey=${pubkey1}`;
         const resultMeCustomers = await client.sql`SELECT * FROM customers WHERE pubkey=${pubkey1}`;
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
-        const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='notSpam'`;
+        const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='default'`;
         const resultMeScorecardsTables = await client.sql`SELECT * FROM scorecardsTables WHERE pubkey=${pubkey1} AND name='notSpam'` ;
 
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
@@ -100,21 +101,30 @@ export default async function handler(
           }
         }
 
-        let meDosSummariesLastUpdated = 999;
+        let meDosSummariesLastUpdated = '?';
         if (resultMeDosSummaries.rowCount) {
-          meDosSummariesLastUpdated = resultMeDosSummaries.rows[0].lastupdated
+          meDosSummariesLastUpdated = secsToTimeAgo(resultMeDosSummaries.rows[0].lastupdated)
         }
 
-        let meRatingsTablesLastUpdated = 999;
+        let meRatingsTablesLastUpdated = '?';
+        let megabytes_myRatingsWithMetaData = 0
         if (resultMeRatingsTables.rowCount) {
-          meRatingsTablesLastUpdated = resultMeRatingsTables.rows[0].lastupdated
+          meRatingsTablesLastUpdated = secsToTimeAgo(resultMeRatingsTables.rows[0].lastupdated)
+          const meRatingsWithMetaData = resultMeRatingsTables.rows[0].ratingswithmetadata
+          const fooNumChars = JSON.stringify(meRatingsWithMetaData).length
+          megabytes_myRatingsWithMetaData = fooNumChars / 1048576
         }
 
-        let meScorecardsTablesLastUpdated = 999;
+        let meScorecardsTablesLastUpdated = '?';
+        let megabytes_myScorecardsWithMetaData = 0
         if (resultMeScorecardsTables.rowCount) {
-          meScorecardsTablesLastUpdated = resultMeScorecardsTables.rows[0].lastupdated
+          meScorecardsTablesLastUpdated = secsToTimeAgo(resultMeScorecardsTables.rows[0].lastupdated)
+          const meScorecardsWithMetaData = resultMeScorecardsTables.rows[0].ratingswithmetadata
+          const fooNumChars = JSON.stringify(meScorecardsWithMetaData).length
+          megabytes_myScorecardsWithMetaData = fooNumChars / 1048576
         }
 
+        // size of files in megabytes
         const foo1NumChars = JSON.stringify(resultMeDosSummaries.rows[0].dosdata).length
         const megabytes_myDosSummaries = foo1NumChars / 1048576
         const foo2NumChars = JSON.stringify(resultMeUsers.rows[0].observerobject).length
@@ -164,11 +174,13 @@ export default async function handler(
                 id: resultMeUsers.rows[0].id,
                 numFollows: resultMeUsers.rows[0].follows.length,
                 numMutes: resultMeUsers.rows[0].mutes.length,
+                whenlastqueriedfollowsandmutes: secsToTimeAgo(resultMeUsers.rows[0].whenlastqueriedfollowsandmutes),
+                whenlastinputfollowsandmutesattempt: secsToTimeAgo(resultMeUsers.rows[0].whenlastinputfollowsandmutesattempt),
+                whenlastcreatedobserverobject: secsToTimeAgo(resultMeUsers.rows[0].whenlastcreatedobserverobject),
                 observerObject: {
                   megabytes: megabytes_myObserverObject,
                   numFollows: -1,
                   numMutes: -1,
-                  whenlastcreatedobserverobject: resultMeUsers.rows[0].whenlastcreatedobserverobject,
                 }
               },
               dosSummaries_table: {
@@ -180,13 +192,13 @@ export default async function handler(
               ratingsTables_table: {
                 lastupdated: meRatingsTablesLastUpdated,
                 ratingswithmetadata: {
-                  megabytes: -1
+                  megabytes: megabytes_myRatingsWithMetaData
                 }
               },
               scorecardsTables_table: {
                 lastupdated: meScorecardsTablesLastUpdated,
                 scorecardswithmetadata: {
-                  megabytes: -1
+                  megabytes: megabytes_myScorecardsWithMetaData
                 }
               }
             }
