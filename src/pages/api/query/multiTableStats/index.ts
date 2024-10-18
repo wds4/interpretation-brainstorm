@@ -116,11 +116,16 @@ export default async function handler(
 
         let meRatingsTablesLastUpdated = '?';
         let megabytes_myRatingsWithMetaData = 0
+        let numRaters = -1
         if (resultMeRatingsTables.rowCount) {
           meRatingsTablesLastUpdated = secsToTimeAgo(resultMeRatingsTables.rows[0].lastupdated)
-          const meRatingsWithMetaData = resultMeRatingsTables.rows[0].ratingswithmetadata
-          const fooNumChars = JSON.stringify(meRatingsWithMetaData).length
+          const oMeRatingsWithMetaData = resultMeRatingsTables.rows[0].ratingswithmetadata
+          const fooNumChars = JSON.stringify(oMeRatingsWithMetaData).length
           megabytes_myRatingsWithMetaData = fooNumChars / 1048576
+
+          const oRatingsNotSpam = oMeRatingsWithMetaData.data.notSpam
+          const aRaters = Object.keys(oRatingsNotSpam)
+          numRaters = aRaters.length
         }
 
         let meScorecardsTablesLastUpdated = '?';
@@ -201,7 +206,8 @@ export default async function handler(
               ratingsTables_table: {
                 lastupdated: meRatingsTablesLastUpdated,
                 ratingswithmetadata: {
-                  megabytes: megabytes_myRatingsWithMetaData
+                  megabytes: megabytes_myRatingsWithMetaData,
+                  numRaters
                 }
               },
               scorecardsTables_table: {
