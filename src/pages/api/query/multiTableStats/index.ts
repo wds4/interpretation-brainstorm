@@ -5,6 +5,7 @@ import { npubEncode, verifyPubkeyValidity } from '@/helpers/nip19';
 /*
 usage:
 http://localhost:3000/api/query/multiTableStats?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
 https://interpretation-brainstorm.vercel.app/api/query/multiTableStats?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 */
 
@@ -40,7 +41,6 @@ export default async function handler(
         const resultMeDosSummaries = await client.sql`SELECT * FROM dosSummaries WHERE pubkey=${pubkey1}`;
         const resultMeRatingsTables = await client.sql`SELECT * FROM ratingsTables WHERE pubkey=${pubkey1} AND name='notSpam'`;
         const resultMeScorecardsTables = await client.sql`SELECT * FROM scorecardsTables WHERE pubkey=${pubkey1} AND name='notSpam'` ;
-
 
         const resUsersTableSize = await client.sql`SELECT pg_size_pretty( pg_total_relation_size('users') );`;
         const res1 = await client.sql`SELECT id FROM users`;
@@ -100,6 +100,21 @@ export default async function handler(
           }
         }
 
+        let meDosSummariesLastUpdated = 999;
+        if (resultMeDosSummaries.rowCount) {
+          meDosSummariesLastUpdated = resultMeDosSummaries.rows[0].lastupdated
+        }
+
+        let meRatingsTablesLastUpdated = 999;
+        if (resultMeRatingsTables.rowCount) {
+          meRatingsTablesLastUpdated = resultMeRatingsTables.rows[0].lastupdated
+        }
+
+        let meScorecardsTablesLastUpdated = 999;
+        if (resultMeScorecardsTables.rowCount) {
+          meScorecardsTablesLastUpdated = resultMeScorecardsTables.rows[0].lastupdated
+        }
+
         const foo1NumChars = JSON.stringify(resultMeDosSummaries.rows[0].dosdata).length
         const megabytes_myDosSummaries = foo1NumChars / 1048576
         const foo2NumChars = JSON.stringify(resultMeUsers.rows[0].observerobject).length
@@ -157,19 +172,19 @@ export default async function handler(
                 }
               },
               dosSummaries_table: {
-                lastupdated: resultMeDosSummaries.rows[0].lastupdated,
+                lastupdated: meDosSummariesLastUpdated,
                 dosData: {
                   megabytes: megabytes_myDosSummaries
                 } 
               },
               ratingsTables_table: {
-                lastupdated: resultMeRatingsTables.rows[0].lastupdated,
+                lastupdated: meRatingsTablesLastUpdated,
                 ratingswithmetadata: {
                   megabytes: -1
                 }
               },
               scorecardsTables_table: {
-                lastupdated: resultMeScorecardsTables.rows[0].lastupdated,
+                lastupdated: meScorecardsTablesLastUpdated,
                 scorecardswithmetadata: {
                   megabytes: -1
                 }
