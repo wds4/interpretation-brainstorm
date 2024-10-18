@@ -12,15 +12,15 @@ Or maybe use ScorecardsV3 for G_in, but ScorecardsWithMetaDataV3 wrappers (which
 
 type context = string
 type pubkey = string
-type score = number | string // can refer to a rating as a primary data point or to an average of ratings, so may be referred to as rating, average, or averageScore. min, max depend on the use case (0-1 for notSpam; 0-5 for 5stars or products; may be negative in some use cases). 
+type score = number // can refer to a rating as a primary data point or to an average of ratings, so may be referred to as rating, average, or averageScore. min, max depend on the use case (0-1 for notSpam; 0-5 for 5stars or products; may be negative in some use cases). 
 type input = number // nonzero, no upper bound
-type confidence = number | string // [0, 1]; can be de novo (rating) or calculated from input (scorecard)
+type confidence = number // [0, 1]; can be de novo (rating) or calculated from input (scorecard)
 type influence = number // score * confidence; useful if observee can play the role of a rater or observer at a future step; may be defined differently for other use cases (e.g. 5 star ratings)
 type weights = number // sum of weights; used as running score during calculations
 type products = number // sum of products
 
 type aScoreAndConfidence = [score, confidence]
-type oScoreAndConfidence = { score: score, confidence: confidence }
+export type oScoreAndConfidence = { score: score, confidence: confidence }
 type aScoreAndInput = [score, input]
 type aInfluenceScoreConfidenceInput = [influence, score, confidence, input]
 export type oExpandedScoreParameters = { influence: influence, score: score, confidence: confidence, input: input, weights: weights, products: products }
@@ -75,16 +75,28 @@ export const exampleRatingsV0:RatingsV0 = {
     }
 }
 
-// Ratings Version0, object: oScoreAndConfidence
+// Ratings Version0o, object: oScoreAndConfidence
 
 type RateeObjectV0o = {
     [key: ratee]: oScoreAndConfidence
-  }
+}
+
+type RateeObjectCV0o = { // C = compactFormat; Alice: 'f' instead of Alice: { score: 1.0, confidence: 0.05 }
+    [key: ratee]: string
+}
+
 export type RaterObjectV0o = {
     [key: rater]: RateeObjectV0o
 }
+export type RaterObjectCV0o = {
+    [key: rater]: RateeObjectCV0o
+}
+
 export type RatingsV0o = {
     [key: context]: RaterObjectV0o
+}
+export type RatingsCV0o = {
+    [key: context]: RaterObjectCV0o
 }
 
 export const exampleRatingsV0o:RatingsV0o = {
@@ -108,6 +120,31 @@ export const exampleRatingsV0o:RatingsV0o = {
         4: {
             3: { score: 1.0, confidence: 0.05},
             5: { score: 0.0, confidence: 0.1},
+        },
+    }
+}
+
+export const exampleRatingsCV0o:RatingsCV0o = {
+    notSpam: {
+        1: {
+            alice: 'f',
+        },
+        alice: {
+            bob: 'f',
+            charlie: 'f',
+            4: 'f',
+            zed: 'm',
+        },
+        bob: {
+            charlie: 'f',
+            zed: 'm',
+        },
+        zed: {
+            zed: 'f',
+        },
+        4: {
+            3: 'f',
+            5: 'm',
         },
     }
 }
@@ -213,7 +250,7 @@ export const exampleScorecardsV0:ScorecardsV0 = {
 // Scorecards Version 1: aScoreAndInput
 type ObserveeObjectV1 = {
     [key: pubkey]: aScoreAndInput
-}
+  }
 type ObserverObjectV1 = {
     [key: pubkey]: ObserveeObjectV1
 }
@@ -240,7 +277,7 @@ export const exampleScorecardsV1:ScorecardsV1 = {
 // Scorecards Version 2: aInfluenceScoreConfidenceInput
 type ObserveeObjectV2 = {
     [key: pubkey]: aInfluenceScoreConfidenceInput
-}
+  }
 type ObserverObjectV2 = {
     [key: pubkey]: ObserveeObjectV2
 }
@@ -265,10 +302,10 @@ export const exampleScorecardsV2:ScorecardsV2 = {
 }
 
 // Scorecards Version 3: oExpandedScoreParameters
-type ObserveeObjectV3 = {
+export type ObserveeObjectV3 = {
     [key: observee]: oExpandedScoreParameters
-  }
-type ObserverObjectV3 = {
+}
+export type ObserverObjectV3 = {
     [key: observer]: ObserveeObjectV3
 }
 export type ScorecardsV3 = {
@@ -307,17 +344,17 @@ export type ScorecardsMetaData = {
     rigor?: number
 }
 
-type RatingsMetaData = {
+export type RatingsMetaData = {
     observer: observer // the "owner" of the Ratings (i.e. the person who commissioned its creation?)
     interpretationPrococolUID?: string
     compactFormat?: boolean
-    replacements?: object
+    replacements: {[key: string]: oScoreAndConfidence}
 }
 
 export type ScorecardsWithMetaDataV3 = {
     success: boolean
     message?: string
-    metaData: ScorecardsMetaData
+    metaData: object
     data: ScorecardsV3
 }
 
@@ -329,6 +366,24 @@ export type RatingsWithMetaData = {
 export type RatingsWithMetaDataV0o = {
     metaData: RatingsMetaData
     data: RatingsV0o
+}
+
+export type RatingsWithMetaDataCV0o = {
+    metaData: RatingsMetaData
+    data: RatingsCV0o
+}
+
+export const exampleRatingsWithMetaDataCV0o:RatingsWithMetaDataCV0o = {
+    metaData: {
+        observer: 'Alice',
+        interpretationPrococolUID: 'recommendedBrainstormNotBotsInterpretationProtocol',
+        compactFormat: true,
+        replacements: {
+            f: {"score":1,"confidence":0.05},
+            m: {"score":0,"confidence":0.1}
+        }
+    },
+    data: exampleRatingsCV0o
 }
 
 // GrapeRank protocol parameters
@@ -353,11 +408,12 @@ export type GrapeRankParameters5Star = {
     }
 }
 
-// type GrapeRankParameters = GrapeRankParametersBasicNetwork | GrapeRankParameters5Star 
+// type GrapeRankParameters = GrapeRankParametersBasicNetwork | GrapeRankParameters5Star
 
 export type GrapeRankParametersWithMetaData = {
     metaData: {
-        grapeRankProtocolUID: string,
+        grapeRankProtocolUID: string
+        compactFormat?: boolean
     },
     data: GrapeRankParametersBasicNetwork
 }

@@ -129,22 +129,16 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
             observer: pubkey1,
             interpretationPrococolUID: "recommendedBrainstormNotBotsInterpretationProtocol",
             compactFormat: true,
-            replacements: [
-              {
-                placeholder: 'f',
-                params: {
-                  score: defaultFollowsScore,
-                  confidence: defaultFollowsConfidence
-                }
+            replacements: {
+              f: {
+                score: defaultFollowsScore,
+                confidence: defaultFollowsConfidence
               },
-              {
-                placeholder: 'm',
-                params: {
-                  score: defaultMutesScore,
-                  confidence: defaultMutesConfidence
-                }
-              }
-            ]
+              m: {
+                score: defaultMutesScore,
+                confidence: defaultMutesConfidence
+              },
+            },
           },
           // data: oRatingsTableTruncated
           data: oRatingsTable
