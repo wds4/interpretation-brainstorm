@@ -23,7 +23,17 @@ type aScoreAndConfidence = [score, confidence]
 export type oScoreAndConfidence = { score: score, confidence: confidence }
 type aScoreAndInput = [score, input]
 type aInfluenceScoreConfidenceInput = [influence, score, confidence, input]
-export type oExpandedScoreParameters = { influence: influence, score: score, confidence: confidence, input: input, weights: weights, products: products }
+export type oExpandedScoreParameters = { 
+    influence: influence, 
+    score: score, 
+    confidence: confidence, 
+    input: input, 
+    weights: weights, 
+    products: products 
+}
+export type oInfluenceOnly = { 
+    influence: influence
+}
 
 export const oInitializedScores:oExpandedScoreParameters = {
     influence: 0,
