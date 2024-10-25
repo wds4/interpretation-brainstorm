@@ -99,8 +99,7 @@ export default async function handler(
       }
     })
     sub1.on('eose', async () => {
-      console.log('EOSE RECEIVED, db client being released!!!!!!!!!!!!!!!!!!')
-      client.release();
+      console.log('EOSE RECEIVED.')
       const endTimestamp = Date.now()
       const duration = endTimestamp - startTimestamp + ' msec'
       const response:ResponseData = {
@@ -123,6 +122,7 @@ export default async function handler(
     }
     res.status(500).json(response)
   } finally {
-    console.log('releasing the db client now')
+    // console.log('************** releasing the db client now ****************')
+    // client.release();
   }
 }
