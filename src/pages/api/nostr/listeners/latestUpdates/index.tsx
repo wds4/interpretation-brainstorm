@@ -84,18 +84,18 @@ export default async function handler(
       if (event.kind == 3) {  
         numFollowUpdates++
         const aFollows:string[] = returnFollows(event)
-        // const sFollows = JSON.stringify(aFollows)
         console.log(`================= pubkey: ${event.pubkey} has ${aFollows.length} follows`)
-        // await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${event.pubkey}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
-        // await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+        const sFollows = JSON.stringify(aFollows)
+        await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${event.pubkey}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+        await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
       }
       if (event.kind == 10000) {
         numMuteUpdates++
         const aMutes:string[] = returnMutes(event)
-        // const sMutes = JSON.stringify(aMutes)
         console.log(`================= pubkey: ${event.pubkey} has ${aMutes.length} mutes`)
-        // await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${event.pubkey}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
-        // await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
+        const sMutes = JSON.stringify(aMutes)
+        await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${event.pubkey}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
+        await client.sql`UPDATE users SET havefollowsandmutesbeeninput = false, mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
       }
     })
     sub1.on('eose', async () => {
