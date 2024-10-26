@@ -4,9 +4,16 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
+pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
+pubkey: a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+
+https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+
 
 TODO: option to support npub in addition to pubkey
 */
@@ -101,16 +108,9 @@ export default async function handler(
         const lookupDoSById:Obj2 = {}
         const lookupIdsByDos:Obj1 = {}
         lookupIdsByDos[0] = aSeedIds
-        lookupIdsByDos[1] = []
-        lookupIdsByDos[2] = []
-        lookupIdsByDos[3] = []
-        lookupIdsByDos[4] = []
-        lookupIdsByDos[5] = []
-        lookupIdsByDos[6] = []
-        lookupIdsByDos[7] = []
-        lookupIdsByDos[8] = []
-        lookupIdsByDos[9] = []
-        lookupIdsByDos[10] = []
+        for (let z=1; z < 20; z++) {
+          lookupIdsByDos[z] = []
+        }
         lookupIdsByDos[999] = []
         console.log(`lookupIdsByDos: ${JSON.stringify(lookupIdsByDos, null, 4)}`)
         if (resUsersWithOo.rowCount) {
@@ -158,7 +158,12 @@ export default async function handler(
           dos8: lookupIdsByDos[8].length,
           dos9: lookupIdsByDos[9].length,
           dos10: lookupIdsByDos[10].length,
-          dosOver10: lookupIdsByDos[999].length
+          dos11: lookupIdsByDos[11].length,
+          dos12: lookupIdsByDos[12].length,
+          dos13: lookupIdsByDos[13].length,
+          dos14: lookupIdsByDos[14].length,
+          dos15: lookupIdsByDos[15].length,
+          dos999: lookupIdsByDos[999].length
         }
         const sDosSummary = JSON.stringify(oDosSummary)
         const sLookupIdsByDos = JSON.stringify(lookupIdsByDos)
