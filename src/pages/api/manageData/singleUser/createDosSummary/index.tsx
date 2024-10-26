@@ -25,7 +25,7 @@ type ResponseData = {
   dosSummary?: object
 }
 
-const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,lookupDoSById:Obj2) => {
+const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,lookupDoSById:Obj2,refUserID:number) => {
   console.log(`returnNextDosIds A`)
   const aNextDosIds:number[] = []
   const nextMinimumDos:number = dos + 1
@@ -41,14 +41,25 @@ const returnNextDosIds = (dos:number,lookupIdsByDos:Obj1,lookupFollowsById:Obj1,
     }
     for (let c=0; c < aFollows.length; c++) {
       const id_child = aFollows[c]
-
-      const currentlyRecordedDos = lookupDoSById[id_child] || 999
+      if (id_child == refUserID) {
+        // console.log(`=============== id_child ${id_child} = refUserID ${refUserID}: ============`)
+      }
+      let currentlyRecordedDos = 999
+      if (lookupDoSById.hasOwnProperty(id_child)) {
+        currentlyRecordedDos = lookupDoSById[id_child]
+      }
+      if (id_child == refUserID) {
+        // console.log(`for id_child: ${id_child}, currentlyRecordedDos: ${currentlyRecordedDos} ============`)
+      }
       if (nextMinimumDos < currentlyRecordedDos) {
         lookupDoSById[id_child] = nextMinimumDos
         if (!aNextDosIds.includes(id_child)) {
           aNextDosIds.push(id_child)
           if (id_child == 1) {
             console.log(`pushing ${id_child} into aNextDosIds; dos: ${dos}`)
+            if (id_child == refUserID) {
+              // console.log(`=============== pushing id_child ${id_child} = refUserID ${refUserID} into dos: ${dos}; nextMinimumDos: ${nextMinimumDos} currentlyRecordedDos: ${currentlyRecordedDos} ============`)
+            }
           }
         }
       }
@@ -121,11 +132,12 @@ export default async function handler(
         }
         console.log(`lookupFollowsById length: ${Object.keys(lookupFollowsById).length}`)
         for (let u=0; u < aSeedIds.length; u++) {
-          lookupDoSById[u] = 0
+          const nextSeedId = aSeedIds[u]
+          lookupDoSById[nextSeedId] = 0
         }
 
         for (let d=0; d < 10; d++) {
-          lookupIdsByDos[d+1] = returnNextDosIds(d,lookupIdsByDos,lookupFollowsById,lookupDoSById)
+          lookupIdsByDos[d+1] = returnNextDosIds(d,lookupIdsByDos,lookupFollowsById,lookupDoSById,refUserID)
           console.log(`d: ${d}; length of lookupIdsByDos[d+1]: ${lookupIdsByDos[d+1].length} `)
         }
 
