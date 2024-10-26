@@ -6,9 +6,17 @@ import { verifyPubkeyValidity } from '@/helpers/nip19';
 
 /*
 usage:
+pubkey: e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 http://localhost:3000/api/nostr/listeners/singleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
+
+
+pubkey: a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+http://localhost:3000/api/nostr/listeners/singleUser?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+
+https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
+
 
 This endpoint searches for follows and mutes from the provided pubkey
 and enters them into the intepretation engine database. 
@@ -119,7 +127,7 @@ export default async function handler(
             const sFollows = JSON.stringify(aFollows)
             numFollows = aFollows.length
             kind3timestamp = event.created_at
-            if (event.created_at && event.created_at > previousFollowsCreatedAt) {
+            if (event.created_at && event.created_at >= previousFollowsCreatedAt) {
               const result_update_follows = await client.sql`UPDATE users SET follows=${sFollows}, followsCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
               previousFollowsCreatedAt = event.created_at
               console.log('============ sql result_update_follows:')
@@ -131,7 +139,7 @@ export default async function handler(
             const sMutes = JSON.stringify(aMutes)
             numMutes = aMutes.length
             kind10000timestamp = event.created_at
-            if (event.created_at && event.created_at > previousMutesCreatedAt) {
+            if (event.created_at && event.created_at >= previousMutesCreatedAt) {
               const result_update_mutes = await client.sql`UPDATE users SET mutes=${sMutes}, mutesCreatedAt=${event.created_at} WHERE pubkey=${event.pubkey}`;
               previousMutesCreatedAt = event.created_at
               console.log('============ sql result_update_mutes:')
