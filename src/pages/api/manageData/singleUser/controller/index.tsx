@@ -67,7 +67,10 @@ export default async function handler(
           // TODO: add customer to the users table (should not typically have to do this)
         }
         const customerId = resReferenceUser_customer.rows[0].id
-        const whenSignedUp = resReferenceUser_customer.rows[0].whensignedup
+        let whenSignedUp = resReferenceUser_customer.rows[0].whensignedup
+        if (!whenSignedUp) {
+          whenSignedUp = 0
+        }
         const resReferenceUser_ratingsTables = await client.sql`SELECT lastUpdated FROM ratingsTables WHERE customerId=${customerId};`;
         const resReferenceUser_scorecardsTables = await client.sql`SELECT lastUpdated FROM scorecardsTables WHERE customerId=${customerId};`;
         const resReferenceUser_dosSummaries = await client.sql`SELECT lastUpdated FROM dosSummaries WHERE customerId=${customerId};`;
@@ -130,6 +133,15 @@ export default async function handler(
         /* determine whether any endpoint needs to be triggered */
         let urlToTrigger = ``
         let nextAction = ''
+        /*
+        need to trigger addNewCustomer if:
+        - whenSignedUp == 0
+        */ 
+        if (whenSignedUp == 0) {
+          nextAction = `addNewCustomer`
+          urlToTrigger = `https://calculation-brainstorm.vercel.app/api/grapevine/addNewCustomer?pubkey=${pubkeyParent}&nextStep=true`
+        }
+
         /*
         need to trigger singleUser/listener if:
         - observerObject is empty AND 0 follows, 0 mutes 
