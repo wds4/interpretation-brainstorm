@@ -96,6 +96,7 @@ export default async function handler(
 
         let lastCreated_observerObject = 0
         let lastQueried_followsAndMutes = 0
+        let lastInput_followsAndMutes = 0
 
         if (resReferenceUser_user.rowCount) {
           const observerObject = resReferenceUser_user.rows[0].observerobject
@@ -113,6 +114,7 @@ export default async function handler(
           mutes = resReferenceUser_user.rows[0].mutes
           mutesCreatedAt = resReferenceUser_user.rows[0].mutescreatedat
           haveFollowsAndMutesBeenInput = resReferenceUser_user.rows[0].havefollowsandmutesbeeninput
+          lastInput_followsAndMutes = resReferenceUser_user.rows[0].whenlastinputfollowsandmutesattempt
           console.log(`followsCreatedAt: ${followsCreatedAt}; follows: ${JSON.stringify(follows)}`)
           console.log(`mutesCreatedAt: ${mutesCreatedAt}; mutes: ${typeof mutes}`)
           if (haveFollowsAndMutesBeenInput == true) {
@@ -137,6 +139,7 @@ export default async function handler(
             doesObserverObjectExist,
             haveFollowsAndMutesBeenInput,
             lastQueried_followsAndMutes,
+            lastInput_followsAndMutes,
             lastUpdated_dosSummaries,
             lastCreated_observerObject,
             lastUpdated_ratingsTables,
