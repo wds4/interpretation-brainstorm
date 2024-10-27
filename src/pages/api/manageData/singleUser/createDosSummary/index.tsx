@@ -14,8 +14,6 @@ http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=a08175d6
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
 
-
-TODO: option to support npub in addition to pubkey
 */
 
 type Obj = number[]

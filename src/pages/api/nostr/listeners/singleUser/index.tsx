@@ -23,12 +23,6 @@ http://localhost:3000/api/nostr/listeners/singleUser?pubkey=043df008b847b66bf991
 
 https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&nextStep=true
 
-
-This endpoint searches for follows and mutes from the provided pubkey
-and enters them into the intepretation engine database. 
-The pubkey's row in the database is the only row that is added or updated.
-
-TODO: option to support npub in addition to pubkey
 */
 
 const explicitRelayUrls = [
@@ -162,7 +156,7 @@ export default async function handler(
           const duration = endTimestamp - startTimestamp + ' msec'
           if (follows.length > 0 || mutes.length > 0) {
             if (searchParams.nextStep && searchParams.nextStep == 'true') {
-              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable&pubkey=${pubkey1}&nextStep=true`
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable?pubkey=${pubkey1}&nextStep=true`
               console.log(`url: ${url}`)
               const triggerNextEndpoint = (url:string) => {
                 fetch(url)

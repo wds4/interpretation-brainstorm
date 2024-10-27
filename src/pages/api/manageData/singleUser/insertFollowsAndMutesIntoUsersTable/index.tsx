@@ -13,7 +13,6 @@ This endpoint searches for follows and mutes from the provided pubkey
 and enters them into the intepretation engine database. 
 The pubkey's row in the database is the only row that is added or updated.
 
-TODO: option to support npub in addition to pubkey
 */
 
 
@@ -59,7 +58,7 @@ export default async function handler(
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
 
             if (searchParams.nextStep && searchParams.nextStep == 'true') {
-              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject&pubkey=${pubkey1}&nextStep=true`
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=${pubkey1}&nextStep=true`
               console.log(`url: ${url}`)
               const triggerNextEndpoint = (url:string) => {
                 fetch(url)

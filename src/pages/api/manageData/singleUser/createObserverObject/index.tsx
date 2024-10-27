@@ -10,13 +10,11 @@ http://localhost:3000/api/manageData/singleUser/createObserverObject?pubkey=e527
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
-
 043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7 (tonyStark)
 http://localhost:3000/api/manageData/singleUser/createObserverObject?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
 
-TODO: option to support npub in addition to pubkey
 */
 
 type ResponseData = {
@@ -96,7 +94,7 @@ export default async function handler(
           await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
 
           if (searchParams.nextStep && searchParams.nextStep == 'true') {
-            const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary&pubkey=${pubkeyParent}&nextStep=true`
+            const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=${pubkeyParent}&nextStep=true`
             console.log(`url: ${url}`)
             const triggerNextEndpoint = (url:string) => {
               fetch(url)
