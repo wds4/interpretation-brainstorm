@@ -14,6 +14,12 @@ http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=a08175d6
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
 
+
+pubkey: 043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7 (tonyStark)
+http://localhost:3000/api/manageData/singleUser/createDosSummary?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&nextStep=true
+
+https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
+
 */
 
 type Obj = number[]
@@ -169,12 +175,14 @@ export default async function handler(
         await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos}, dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
  
         if (searchParams.nextStep && searchParams.nextStep == 'true') {
-          const url = `https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":{"context":"notSpam","pubkeys":["${pubkeyParent}"],"depth":5,"follows":{"score":1.0,"confidence":0.05},"mutes":{"score":0.0,"confidence":0.10}}}`
-          console.log(`url: ${url}`)
+          const url = `https://interpretation-brainstorm.vercel.app/api/requestInterpretation?nextStep=true&req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":{"context":"notSpam","pubkeys":["${pubkeyParent}"],"depth":5,"follows":{"score":1.0,"confidence":0.05},"mutes":{"score":0.0,"confidence":0.10}}}`
+          console.log(`=============== url: ${url}`)
           const triggerNextEndpoint = (url:string) => {
             fetch(url)
           }
           triggerNextEndpoint(url)
+        } else {
+          console.log(`============= nextStep NOT TRIGGERED`)
         }
 
         const response:ResponseData = {

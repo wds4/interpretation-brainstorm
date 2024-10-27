@@ -118,3 +118,6 @@ export const secsToTimeAgo = (secs:number) => {
 }
 
 export const timeout = (ms:number) => new Promise((resolve) => setTimeout(resolve, ms));
+/*
+const foo = await timeout(1000)
+*/

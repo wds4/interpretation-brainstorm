@@ -4,10 +4,10 @@ import { ResponseData } from "./processRequest";
 import { arrayToObject } from "@/helpers";
 import { rater, RaterObjectV0o, RatingsV0o, RatingsWithMetaDataV0o } from "@/typesUpdated";
 
-const addObserverObjectToRatingsTable = (oRatingsTable:RatingsV0o,oO:RaterObjectV0o,rater:rater,context:string,f_replace_string:string,m_replace_string:string) => {
+const addObserverObjectToRatingsTable = (oRatingsTable:RatingsV0o,oO:RaterObjectV0o,rater:rater,context:string) => {
   // const sOO = JSON.stringify(oO)
   // console.log(`rater: ${rater}; sOO: ${sOO} `)
-  console.log(`f_replace_string: ${f_replace_string}, m_replace_string: ${m_replace_string}`)
+  // console.log(`f_replace_string: ${f_replace_string}, m_replace_string: ${m_replace_string}`)
 
   // const sOO_edited = sOO.replaceAll('\"f\"',f_replace_string).replaceAll('\"m\"',m_replace_string)
   // const oO_edited = JSON.parse(sOO_edited)
@@ -31,10 +31,12 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
     const defaultMutesConfidence = parameters.mutes.confidence
     // const depth = parameters.depth
 
+    /*
     const f_replace_object = { score: defaultFollowsScore, confidence: defaultFollowsConfidence }
     const f_replace_string = JSON.stringify(f_replace_object)
     const m_replace_object = { score: defaultMutesScore, confidence: defaultMutesConfidence }
     const m_replace_string = JSON.stringify(m_replace_object)
+    */
 
     console.log('============ connecting to the db client now')
     const client = await db.connect()
@@ -94,7 +96,7 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
                 const nextId = aIds[x]
                 if (observerObjectDataById[nextId]) {
                   const observerObject_nextId = observerObjectDataById[nextId].observerobject
-                  oRatingsTable = addObserverObjectToRatingsTable(oRatingsTable,observerObject_nextId,nextId,context,f_replace_string,m_replace_string)
+                  oRatingsTable = addObserverObjectToRatingsTable(oRatingsTable,observerObject_nextId,nextId,context)
 
                 }
                 // console.log(`----- x: ${x}; nextId: ${nextId}; observerObjectDataById[x]: ${JSON.stringify(observerObjectDataById[nextId])}`)

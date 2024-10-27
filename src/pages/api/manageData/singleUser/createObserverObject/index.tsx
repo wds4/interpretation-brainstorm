@@ -11,7 +11,7 @@ http://localhost:3000/api/manageData/singleUser/createObserverObject?pubkey=e527
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=e5272de914bd301755c439b88e6959a43c9d2664831f093c51e9c799a16a102f
 
 043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7 (tonyStark)
-http://localhost:3000/api/manageData/singleUser/createObserverObject?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
+http://localhost:3000/api/manageData/singleUser/createObserverObject?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&nextStep=true
 
 https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
 
@@ -95,11 +95,13 @@ export default async function handler(
 
           if (searchParams.nextStep && searchParams.nextStep == 'true') {
             const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=${pubkeyParent}&nextStep=true`
-            console.log(`url: ${url}`)
+            console.log(`============== url: ${url}`)
             const triggerNextEndpoint = (url:string) => {
               fetch(url)
             }
             triggerNextEndpoint(url)
+          } else {
+            console.log(`=========== next endpoint NOT TRIGGERED`)
           }
 
           const response:ResponseData = {
