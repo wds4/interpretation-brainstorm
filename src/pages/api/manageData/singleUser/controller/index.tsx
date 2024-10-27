@@ -98,8 +98,10 @@ export default async function handler(
         let lastQueried_followsAndMutes = 0
         let lastInput_followsAndMutes = 0
 
+        let observerObject = {}
+
         if (resReferenceUser_user.rowCount) {
-          const observerObject = resReferenceUser_user.rows[0].observerobject
+          observerObject = resReferenceUser_user.rows[0].observerobject
           lastCreated_observerObject = resReferenceUser_user.rows[0].whenlastcreatedobserverobject
           lastQueried_followsAndMutes = resReferenceUser_user.rows[0].whenlastqueriedfollowsandmutes
           console.log(`observerObject: ${typeof observerObject}`)
@@ -125,6 +127,58 @@ export default async function handler(
           }
         }
 
+        /* determine whether any endpoint needs to be triggered */
+        let urlToTrigger = ``
+        let nextAction = ''
+        /*
+        need to trigger singleUser/listener if:
+        - observerObject is empty AND 0 follows, 0 mutes 
+        */ 
+        if ((whenSignedUp > 0) && (JSON.stringify(observerObject) == '{}') && !follows.length && !mutes.length) {
+          nextAction = `singleUserListener`
+          urlToTrigger = `https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=${pubkeyParent}&nextStep=true`
+        }
+
+        /*
+        need to trigger createObserverObject if:
+        observerObject is empty AND (follows.length OR mutes.length)
+        */
+        if ((whenSignedUp > 0) && (JSON.stringify(observerObject) == '{}') && (follows.length || mutes.length)) {
+        nextAction = `createObserverObject`
+        urlToTrigger = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject?pubkey=${pubkeyParent}&nextStep=true`
+       }
+
+        /*
+        need to trigger createDosSummary if:
+        observerObject is nonempty AND lastUpdated_dosSummaries == 0
+        */
+        if ((whenSignedUp > 0) && (JSON.stringify(observerObject) != '{}') && (lastUpdated_dosSummaries == 0)) {
+          nextAction = `createDosSummary`
+          urlToTrigger = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary?pubkey=${pubkeyParent}&nextStep=true`
+        }
+
+        /*
+        need to trigger requestInterpretation if:
+        lastUpdated_dosSummaries > 0
+        AND
+        lastUpdated_ratingsTables == 0
+        */
+        if ((whenSignedUp > 0) && (lastUpdated_dosSummaries > 0) && (lastUpdated_ratingsTables == 0)) {
+          nextAction = `requestInterpretation`
+          urlToTrigger = `https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":{"context":"notSpam","pubkeys":["${pubkeyParent}"],"depth":5,"follows":{"score":1.0,"confidence":0.05},"mutes":{"score":0.0,"confidence":0.10}}}&nextStep=true`
+        }
+
+        /*
+        need to trigger calculate/basicNetwork if:
+        lastUpdated_ratingsTables > 0
+        AND
+        lastUpdated_scorecardsTables == 0
+        */
+        if ((whenSignedUp > 0) && (lastUpdated_ratingsTables > 0) && (lastUpdated_scorecardsTables == 0)) {
+          nextAction = `calculateBasicNetwork`
+          urlToTrigger = `https://calculation-brainstorm.vercel.app/api/grapevine/calculate/basicNetwork?name=default&pubkey=${pubkeyParent}`
+        }
+
         const response:ResponseData = {
           success: true,
           message: 'api/manageData/singleUser/controller: made it to the end of the try block',
@@ -144,6 +198,8 @@ export default async function handler(
             lastCreated_observerObject,
             lastUpdated_ratingsTables,
             lastUpdated_scorecardsTables,
+            nextAction,
+            urlToTrigger,
           }
         }
         res.status(200).json(response)
