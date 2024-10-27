@@ -171,7 +171,7 @@ export default async function handler(
         await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos}, dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
  
         if (searchParams.nextStep && searchParams.nextStep == 'true') {
-          const url = `https://calculation-brainstorm.vercel.app/api/grapevine/calculate/basicNetwork?name=default&pubkey=${pubkeyParent}&sendMessageConfirmation=true`
+          const url = `https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"universalInterpretationProtocolID":"recommendedBrainstormNotBotsInterpretationProtocol","parameters":{"context":"notSpam","pubkeys":["${pubkeyParent}"],"depth":5,"follows":{"score":1.0,"confidence":0.05},"mutes":{"score":0.0,"confidence":0.10}}}`
           console.log(`url: ${url}`)
           const triggerNextEndpoint = (url:string) => {
             fetch(url)

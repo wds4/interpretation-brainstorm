@@ -148,6 +148,8 @@ const returnBrainRecNotBotsRatingsTable = async (parameters: InterpProtocolParam
         const currentTimestamp = Math.floor(Date.now() / 1000)
         await client.sql`UPDATE ratingsTables SET ratingswithmetadata=${sRatingsWithMetaData}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkey1}`;
 
+
+
         const ratingsTableChars = JSON.stringify(oRatingsTable).length
         const megabyteSize = ratingsTableChars / 1048576
         const message = 'Results of your nostr/requestInterpretation query:'

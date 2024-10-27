@@ -89,7 +89,15 @@ export default async function handler(
         let followsCreatedAt = 0
         let mutesCreatedAt = 0
         let haveFollowsAndMutesBeenInput = false
+
+        let doesObserverObjectExist = 'yes'
+
         if (resReferenceUser_user.rowCount) {
+          const observerObject = resReferenceUser_user.rows[0].observerobject
+          if (JSON.stringify(observerObject) == '{}') {
+            doesObserverObjectExist = 'no'
+          }
+
           follows = resReferenceUser_user.rows[0].follows
           mutes = resReferenceUser_user.rows[0].mutes
           followsCreatedAt = resReferenceUser_user.rows[0].followscreatedat
@@ -115,6 +123,7 @@ export default async function handler(
             mutesCreatedAt,
             numFollows: follows.length,
             numMutes: mutes.length,
+            doesObserverObjectExist,
             lastUpdated_ratingsTables,
             lastUpdated_scorecardsTables,
             lastUpdated_dosSummaries

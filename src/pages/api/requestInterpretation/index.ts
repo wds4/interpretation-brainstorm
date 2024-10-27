@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
-import processRequest from './processRequest';
+import processRequest, { ResponseData } from './processRequest';
 
 /*
 Tests:
@@ -20,11 +20,6 @@ https://interpretation-brainstorm.vercel.app/api/requestInterpretation?req={"uni
 
 */
 
-type ResponseData = {
-    success: boolean,
-    message?: string
-}
-
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
     const client = await db.connect();
     try {
@@ -37,8 +32,26 @@ export default async function handler(request: NextApiRequest, response: NextApi
         if (searchParams.req) {
             let res:ResponseData = { success: false, message: "unknown error" }
             if (typeof req == 'string') {
-              res = await processRequest(req)
-              response.status(500).json(res)
+                res = await processRequest(req)
+                if (res.success) {
+                    if (res.ratingsWithMetaData && res.ratingsWithMetaData.metaData) {
+                        const pubkey1 = res.ratingsWithMetaData.metaData.observer
+                        if (searchParams.nextStep && searchParams.nextStep == 'true') {
+                            const url = `https://calculation-brainstorm.vercel.app/api/grapevine/calculate/basicNetwork?name=default&pubkey=${pubkey1}&sendMessageConfirmation=true`
+                            console.log(`url: ${url}`)
+                            const triggerNextEndpoint = (url:string) => {
+                                fetch(url)
+                            }
+                            triggerNextEndpoint(url)
+                        }
+                    }
+                    response.status(200).json(res)
+                }
+
+                if (!res.success) {
+                    response.status(500).json(res)
+                }
+                
             } else {
                 response.status(500).json(res)
             }
