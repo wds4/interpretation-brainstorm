@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
 import processRequest, { ResponseData } from './processRequest';
+import { timeout } from '@/helpers';
 
 /*
 Tests:
@@ -48,6 +49,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
                             const triggerNextEndpoint = (url:string) => {
                                 fetch(url)
                             }
+                            await timeout(5000)
                             triggerNextEndpoint(url)
                         }
                     }

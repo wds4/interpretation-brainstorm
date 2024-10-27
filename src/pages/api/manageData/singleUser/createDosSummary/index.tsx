@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from "@vercel/postgres";
 import { verifyPubkeyValidity } from '@/helpers/nip19';
+import { timeout } from '@/helpers';
 
 /*
 usage:
@@ -180,6 +181,7 @@ export default async function handler(
           const triggerNextEndpoint = (url:string) => {
             fetch(url)
           }
+          await timeout(5000)
           triggerNextEndpoint(url)
         } else {
           console.log(`============= nextStep NOT TRIGGERED`)
