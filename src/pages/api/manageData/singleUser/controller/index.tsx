@@ -133,6 +133,7 @@ export default async function handler(
             numMutes: mutes.length,
             sObserverObject,
             doesObserverObjectExist,
+            haveFollowsAndMutesBeenInput,
             lastQueried_followsAndMutes,
             lastUpdated_dosSummaries,
             lastCreated_observerObject,
