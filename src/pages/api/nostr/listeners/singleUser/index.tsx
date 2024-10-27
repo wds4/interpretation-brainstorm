@@ -17,6 +17,12 @@ http://localhost:3000/api/nostr/listeners/singleUser?pubkey=a08175d65051c08b8360
 
 https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=a08175d65051c08b83600abf6f5c18efd455114b4863c65959c92b13ee52f87c
 
+tonyStark
+pubkey: 043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
+http://localhost:3000/api/nostr/listeners/singleUser?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&nextStep=true
+
+https://interpretation-brainstorm.vercel.app/api/nostr/listeners/singleUser?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&nextStep=true
+
 
 This endpoint searches for follows and mutes from the provided pubkey
 and enters them into the intepretation engine database. 
@@ -121,9 +127,12 @@ export default async function handler(
         console.log('============ sql result_update_timestamp:')
         console.log(result_update_timestamp)
         const sub1 = ndk.subscribe(filter)
+        let follows = []
+        let mutes = []
         sub1.on('event', async (event) => {
           if (event.kind == 3) {
             const aFollows:string[] = returnFollows(event)
+            follows = aFollows
             const sFollows = JSON.stringify(aFollows)
             numFollows = aFollows.length
             kind3timestamp = event.created_at
@@ -136,6 +145,7 @@ export default async function handler(
           }
           if (event.kind == 10000) {
             const aMutes:string[] = returnMutes(event)
+            mutes = aMutes
             const sMutes = JSON.stringify(aMutes)
             numMutes = aMutes.length
             kind10000timestamp = event.created_at
@@ -150,6 +160,16 @@ export default async function handler(
         sub1.on('eose', async () => {
           const endTimestamp = Date.now()
           const duration = endTimestamp - startTimestamp + ' msec'
+          if (follows.length > 0 || mutes.length > 0) {
+            if (searchParams.nextStep && searchParams.nextStep == 'true') {
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject&pubkey=${pubkey1}&nextStep=true`
+              console.log(`url: ${url}`)
+              const triggerNextEndpoint = (url:string) => {
+                fetch(url)
+              }
+              triggerNextEndpoint(url)
+            }
+          }
           const response:ResponseData = {
             success: true,
             message: `updateFollowsAndMutesSingleUser: ndk eose received; All done!!!`,

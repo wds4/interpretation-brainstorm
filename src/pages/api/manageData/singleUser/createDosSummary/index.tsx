@@ -170,6 +170,15 @@ export default async function handler(
         await client.sql`INSERT INTO dosSummaries (pubkey, userid, customerid) VALUES(${pubkeyParent}, ${refUserID}, ${refCustomerID}) ON CONFLICT DO NOTHING;`;
         await client.sql`UPDATE dosSummaries SET lookupidsbydos=${sLookupIdsByDos}, dosdata=${sDosSummary}, lastupdated=${currentTimestamp} WHERE pubkey=${pubkeyParent};`;
  
+        if (searchParams.nextStep && searchParams.nextStep == 'true') {
+          const url = `https://calculation-brainstorm.vercel.app/api/grapevine/calculate/basicNetwork?name=default&pubkey=${pubkeyParent}&sendMessageConfirmation=true`
+          console.log(`url: ${url}`)
+          const triggerNextEndpoint = (url:string) => {
+            fetch(url)
+          }
+          triggerNextEndpoint(url)
+        }
+
         const response:ResponseData = {
           success: true,
           message: 'api/manageData/singleUser/createDosSummary: made it to the end of the try block',

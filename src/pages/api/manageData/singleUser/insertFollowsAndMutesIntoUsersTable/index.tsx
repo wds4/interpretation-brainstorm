@@ -57,6 +57,16 @@ export default async function handler(
                 await client.sql`INSERT INTO users (pubkey, lastUpdated) VALUES (${pk}, ${currentTimestamp}) ON CONFLICT DO NOTHING;`;
             }
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
+
+            if (searchParams.nextStep && searchParams.nextStep == 'true') {
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary&pubkey=${pubkey1}&nextStep=true`
+              console.log(`url: ${url}`)
+              const triggerNextEndpoint = (url:string) => {
+                fetch(url)
+              }
+              triggerNextEndpoint(url)
+            }
+
             const response:ResponseData = {
               success: true,
               message: 'api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable results:',

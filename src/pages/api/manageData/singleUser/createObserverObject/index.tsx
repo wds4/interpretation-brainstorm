@@ -87,6 +87,16 @@ export default async function handler(
           const sObserverObject = JSON.stringify(observerObject)
           // console.log('observerObject: ' + JSON.stringify(observerObject, null, 4))
           await client.sql`UPDATE users SET observerObject=${sObserverObject}, follows='[]', mutes='[]', whenlastcreatedobserverobject = ${currentTimestamp} WHERE pubkey = ${pubkeyParent}`;
+
+          if (searchParams.nextStep && searchParams.nextStep == 'true') {
+            const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable&pubkey=${pubkeyParent}&nextStep=true`
+            console.log(`url: ${url}`)
+            const triggerNextEndpoint = (url:string) => {
+              fetch(url)
+            }
+            triggerNextEndpoint(url)
+          }
+
           const response:ResponseData = {
             success: true,
             message: 'api/manageData/singleUser/createObserverObject results:',
