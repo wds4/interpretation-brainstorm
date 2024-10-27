@@ -67,6 +67,7 @@ export default async function handler(
           // TODO: add customer to the users table (should not typically have to do this)
         }
         const customerId = resReferenceUser_customer.rows[0].id
+        const whenSignedUp = resReferenceUser_customer.rows[0].whensignedup
         const resReferenceUser_ratingsTables = await client.sql`SELECT lastUpdated FROM ratingsTables WHERE customerId=${customerId};`;
         const resReferenceUser_scorecardsTables = await client.sql`SELECT lastUpdated FROM scorecardsTables WHERE customerId=${customerId};`;
         const resReferenceUser_dosSummaries = await client.sql`SELECT lastUpdated FROM dosSummaries WHERE customerId=${customerId};`;
@@ -126,6 +127,7 @@ export default async function handler(
           success: true,
           message: 'api/manageData/singleUser/controller: made it to the end of the try block',
           data: {
+            whenSignedUp,
             currentTimestamp,
             followsCreatedAt,
             mutesCreatedAt,
