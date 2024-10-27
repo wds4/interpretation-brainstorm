@@ -94,10 +94,12 @@ export default async function handler(
         let sObserverObject = ''
 
         let lastCreated_observerObject = 0
+        let lastQueried_followsAndMutes = 0
 
         if (resReferenceUser_user.rowCount) {
           const observerObject = resReferenceUser_user.rows[0].observerobject
           lastCreated_observerObject = resReferenceUser_user.rows[0].whenlastcreatedobserverobject
+          lastQueried_followsAndMutes = resReferenceUser_user.rows[0].whenlastqueriedfollowsandmutes
           console.log(`observerObject: ${typeof observerObject}`)
           sObserverObject = JSON.stringify(observerObject)
           if (JSON.stringify(observerObject) == '{}') {
@@ -131,6 +133,7 @@ export default async function handler(
             numMutes: mutes.length,
             sObserverObject,
             doesObserverObjectExist,
+            lastQueried_followsAndMutes,
             lastUpdated_dosSummaries,
             lastCreated_observerObject,
             lastUpdated_ratingsTables,
