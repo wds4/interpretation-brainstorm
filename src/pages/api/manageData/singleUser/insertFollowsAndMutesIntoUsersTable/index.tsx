@@ -59,7 +59,7 @@ export default async function handler(
             await client.sql`UPDATE users SET havefollowsandmutesbeeninput = true, whenlastinputfollowsandmutesattempt = ${currentTimestamp} WHERE pubkey = ${pubkey1}`;
 
             if (searchParams.nextStep && searchParams.nextStep == 'true') {
-              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createDosSummary&pubkey=${pubkey1}&nextStep=true`
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject&pubkey=${pubkey1}&nextStep=true`
               console.log(`url: ${url}`)
               const triggerNextEndpoint = (url:string) => {
                 fetch(url)

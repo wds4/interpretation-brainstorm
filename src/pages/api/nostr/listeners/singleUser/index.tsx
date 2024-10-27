@@ -162,7 +162,7 @@ export default async function handler(
           const duration = endTimestamp - startTimestamp + ' msec'
           if (follows.length > 0 || mutes.length > 0) {
             if (searchParams.nextStep && searchParams.nextStep == 'true') {
-              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/createObserverObject&pubkey=${pubkey1}&nextStep=true`
+              const url = `https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/insertFollowsAndMutesIntoUsersTable&pubkey=${pubkey1}&nextStep=true`
               console.log(`url: ${url}`)
               const triggerNextEndpoint = (url:string) => {
                 fetch(url)
