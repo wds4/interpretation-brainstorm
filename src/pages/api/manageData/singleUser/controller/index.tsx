@@ -20,9 +20,16 @@ https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/controlle
 
 tonyStark
 pubkey: 043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
-http://localhost:3000/api/manageData/singleUser/controller?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
+http://localhost:3000/api/manageData/singleUser/controller?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&triggerNextAction=true
 
-https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/controller?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7
+https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/controller?pubkey=043df008b847b66bf991dfb696aac68973eccfa4cedfb87173df79a4cf666ea7&triggerNextAction=true
+
+
+prettyGood
+pubkey: 53dab47395542b4df9c9d5b32934403b751f0a882e69bb8dd8a660df3a95f02d
+http://localhost:3000/api/manageData/singleUser/controller?pubkey=53dab47395542b4df9c9d5b32934403b751f0a882e69bb8dd8a660df3a95f02d&triggerNextAction=true
+
+https://interpretation-brainstorm.vercel.app/api/manageData/singleUser/controller?pubkey=53dab47395542b4df9c9d5b32934403b751f0a882e69bb8dd8a660df3a95f02d&triggerNextAction=true
 
 */
 
@@ -189,6 +196,16 @@ export default async function handler(
         if ((whenSignedUp > 0) && (lastUpdated_ratingsTables > 0) && (lastUpdated_scorecardsTables == 0)) {
           nextAction = `calculateBasicNetwork`
           urlToTrigger = `https://calculation-brainstorm.vercel.app/api/grapevine/calculate/basicNetwork?name=default&pubkey=${pubkeyParent}`
+        }
+
+        if (searchParams.triggerNextAction && searchParams.triggerNextAction == 'true') {
+          console.log(`======== triggering urlToTrigger: ${urlToTrigger}`)
+          const triggerNextEndpoint = (url:string) => {
+            fetch(url)
+          }
+          if (urlToTrigger) { triggerNextEndpoint(urlToTrigger) }
+        } else {
+          console.log(`============= urlToTrigger NOT TRIGGERED`)
         }
 
         const response:ResponseData = {
